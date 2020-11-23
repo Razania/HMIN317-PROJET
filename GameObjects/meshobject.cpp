@@ -28,7 +28,7 @@ MeshObject::MeshObject(std::string & modelName, QString textureName)
     this->indices.resize(objIndices.size());
 
     for (unsigned int i = 0; i < objVertices.size(); ++i){
-        this->vertices[i] = VertexData{objVertices[i], QVector2D(0,0)};
+        this->vertices[i] = VertexData{objVertices[i], QVector3D(0,0,0), QVector2D(0,0)};
     }
 
     for (unsigned int i = 0; i < objIndices.size(); ++i){
@@ -61,7 +61,7 @@ MeshObject::MeshObject(std::string & modelName, QString textureName,Transform* t
     this->indices.resize(objIndices.size());
 
     for (unsigned int i = 0; i < objVertices.size(); ++i){
-        this->vertices[i] = VertexData{objVertices[i], QVector2D(0,0)};
+        this->vertices[i] = VertexData{objVertices[i], QVector3D(0,0,0), QVector2D(0,0)};
     }
 
     for (unsigned int i = 0; i < objIndices.size(); ++i){
@@ -72,7 +72,9 @@ MeshObject::MeshObject(std::string & modelName, QString textureName,Transform* t
 }
 
 void MeshObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, QMatrix4x4 view) {
-    program->setUniformValue("mvp_matrix", projection * view * this->transform->worldMatrix());
+    program->setUniformValue("m_matrix", this->transform->worldMatrix());
+    program->setUniformValue("v_matrix", view);
+    program->setUniformValue("p_matrix", projection);
 
     texture->bind(textureIndex);
     program->setUniformValue("texture", textureIndex);

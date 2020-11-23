@@ -53,16 +53,16 @@
 #include <QMouseEvent>
 
 #include <math.h>
+#include <Misc/Generic.h>
 #include <GameObjects/meshobject.h>
 #include <GameObjects/astronomicalbodyobject.h>
 #include <GameObjects/chunkgameobject.h>
 #include <GameObjects/camera.h>
-
+#include <Misc/textureloader.h>
 #include <WorldGeneration/worldgrid.h>
 #include <WorldGeneration/chunk.h>
 
 vector<ChunkGameObject*> chunkObjects;
-
 
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
@@ -75,6 +75,7 @@ MainWidget::MainWidget(QWidget *parent) :
 {
     fps = 60;
     cameraCurrentVelocityNorm = QVector3D(0,0,0);
+    cameraCurrentRotationNorm = QVector3D(0,0,0);
     camera = Camera(QVector3D(0,90.0f,0), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
 }
 
@@ -91,7 +92,6 @@ MainWidget::~MainWidget()
     doneCurrent();
 }
 
-//! [0]
 void MainWidget::mousePressEvent(QMouseEvent *e)
 {
     // Save mouse press position
@@ -116,12 +116,9 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
     // Increase angular speed
     angularSpeed += acc;
 }
-//! [0]
 
-//! [1]
 void MainWidget::timerEvent(QTimerEvent *)
 {
-
     //Mouvement Camera
     if(camera.getCameraMode() == camera.CAMERA_MODE_ORBITAL){
         //qDebug("cameraDirection => (%f,%f,%f)", this->camera.getCameraDirection().x(), this->camera.getCameraDirection().y(), this->camera.getCameraDirection().z());
@@ -130,12 +127,11 @@ void MainWidget::timerEvent(QTimerEvent *)
         this->updateCameraVelNorm();
         QVector3D cameraVelocity = (cameraCurrentVelocityNorm * this->CAMERA_MOVEMENT_SPEED);
         QVector3D newCameraPosition = this->camera.getCameraPosition() + cameraVelocity;
-        if(newCameraPosition != this->camera.getCameraPosition()){
-            qDebug("newCameraPosition => (%f,%f,%f)",newCameraPosition.x(),newCameraPosition.y(),newCameraPosition.z());
-            qDebug("newCameraRotation => (%f,%f,%f)",this->camera.getCameraRotation().x(),this->camera.getCameraRotation().y(),this->camera.getCameraRotation().z());
+        //qDebug("newCameraPosition => (%f,%f,%f)",newCameraPosition.x(),newCameraPosition.y(),newCameraPosition.z());
+        //qDebug("newCameraRotation => (%f,%f,%f)",this->camera.getCameraRotation().x(),this->camera.getCameraRotation().y(),this->camera.getCameraRotation().z());
 
-            this->camera.setCameraPosition(newCameraPosition);
-        }
+        this->camera.setCameraPosition(newCameraPosition);
+        this->camera.setCameraRotation(this->camera.getCameraRotation() + cameraCurrentRotationNorm);
     }
 
     //Rotation souris
@@ -150,7 +146,6 @@ void MainWidget::timerEvent(QTimerEvent *)
 
     update();
 }
-//! [1]
 
 void MainWidget::initializeGL()
 {
@@ -161,24 +156,25 @@ void MainWidget::initializeGL()
     initShaders();
     initTextures();
 
-//! [2]
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
-
+glEnable(GL_TEXTURE_2D_ARRAY);
     // Enable back face culling
     glEnable(GL_CULL_FACE);
-//! [2]
 
     geometries = new GeometryEngine;
     this->sceneRoot = new GameObject();
 
-    WorldGrid worldGrid = WorldGrid(QVector3D(16,256,16));
+    WorldGrid worldGrid = WorldGrid(1,QVector3D(16,256,16));
 
-    short viewRange = 0;
+    short viewRange = 4;
+
+    for(short i = -(abs(viewRange)); i <= (abs(viewRange)); i++)
+        for(short j = -(abs(viewRange)); j <= (abs(viewRange)); j++)
+            worldGrid.generateChunk(QPair<int, int>(i, j));
 
     for(short i = -(abs(viewRange)); i <= (abs(viewRange)); i++)
         for(short j = -(abs(viewRange)); j <= (abs(viewRange)); j++){
-            worldGrid.generateChunk(QPair<int, int>(i, j));
             chunkObjects.push_back(new ChunkGameObject(worldGrid.getChunk(QPair<int, int>(i, j))));
             chunkObjects[chunkObjects.size() - 1]->transform->setParent(this->sceneRoot->transform);
         }
@@ -187,7 +183,6 @@ void MainWidget::initializeGL()
     timer.start(1000.0f/fps, this);
 }
 
-//! [3]
 void MainWidget::initShaders()
 {
     // Compile vertex shader
@@ -206,39 +201,24 @@ void MainWidget::initShaders()
     if (!program.bind())
         close();
 }
-//! [3]
 
-//! [4]
 void MainWidget::initTextures()
 {
-    heightmap = new QOpenGLTexture(QImage(":/sunmap.png").mirrored());
-    heightmap->setMinificationFilter(QOpenGLTexture::Nearest);
-    heightmap->setMagnificationFilter(QOpenGLTexture::Linear);
-    heightmap->setWrapMode(QOpenGLTexture::Repeat);
+    TextureLoader::initInstance(this);
 
-    grassTexture = new QOpenGLTexture(QImage(":/earthmap1k.png").mirrored());
-    grassTexture->setMinificationFilter(QOpenGLTexture::Nearest);
-    grassTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    grassTexture->setWrapMode(QOpenGLTexture::Repeat);
-
-    rockTexture = new QOpenGLTexture(QImage(":/pixelStone480x480.png").mirrored());
+    rockTexture = new QOpenGLTexture(QImage(":/stoneSide.png").mirrored());
     rockTexture->setMinificationFilter(QOpenGLTexture::Nearest);
     rockTexture->setMagnificationFilter(QOpenGLTexture::Linear);
     rockTexture->setWrapMode(QOpenGLTexture::Repeat);
-
-
-
 }
-//! [4]
 
-//! [5]
 void MainWidget::resizeGL(int w, int h)
 {
     // Calculate aspect ratio
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 0.1, zFar = 70.0, fov = 60.0;
+    const qreal zNear = 0.2, zFar = 256.0, fov = 60.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -246,21 +226,22 @@ void MainWidget::resizeGL(int w, int h)
     // Set perspective projection
     projection.perspective(fov, aspect, zNear, zFar);
 }
-//! [5]
 
 void MainWidget::paintGL()
 {
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+    glEnable(GL_TEXTURE_2D_ARRAY);
+    // Enable back face culling
     glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
 
     rockTexture->bind(0);
     program.setUniformValue("texture", 0);
 
     sceneRoot->Update();
     sceneRoot->Draw(&program,geometries, projection,this->camera.getViewMatrix());
-
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *ev)
@@ -355,5 +336,5 @@ void MainWidget::updateCameraVelNorm(){
         newRotNorm -= QVector3D(0,1,0);
 
     this->cameraCurrentVelocityNorm = newVelNorm;
-    this->camera.setCameraRotation(this->camera.getCameraRotation() + newRotNorm);
+    this->cameraCurrentRotationNorm = newRotNorm;
 }

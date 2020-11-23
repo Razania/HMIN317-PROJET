@@ -10,14 +10,6 @@
 #include <vector>
 using namespace std;
 
-enum class FaceDirection{
-    Bottom = 0,
-    Top = 1,
-    Right = 2,
-    Left = 3,
-    Front = 4,
-    Back = 5
-};
 
 class ChunkGameObject : public GameObject
 {

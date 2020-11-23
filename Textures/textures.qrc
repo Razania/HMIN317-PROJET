@@ -1,15 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file>cube.png</file>
-        <file>earthmap1k.jpg</file>
-        <file>earthmap1k.png</file>
-        <file>grass.png</file>
-        <file>heightmap.png</file>
-        <file>moonmap1k.png</file>
-        <file>rock.png</file>
-        <file>snowrocks.png</file>
-        <file>sunmap.png</file>
-        <file>pixelStone16x16.png</file>
-        <file>pixelStone480x480.png</file>
+        <file>grassBottom.png</file>
+        <file>grassSide.png</file>
+        <file>grassTop.png</file>
+        <file>dirtBottom.png</file>
+        <file>dirtSide.png</file>
+        <file>dirtTop.png</file>
+        <file>stoneBottom.png</file>
+        <file>stoneSide.png</file>
+        <file>stoneTop.png</file>
     </qresource>
 </RCC>

@@ -1,4 +1,6 @@
 #include "chunk.h"
+#include <QDebug>
+#include "noise/src/noise.h"
 
 Chunk::Chunk(WorldGrid* parent, QPair<int, int> position, QVector3D chunkDimensions)
     : parent(parent), position(position), chunkDimensions(chunkDimensions)
@@ -6,13 +8,29 @@ Chunk::Chunk(WorldGrid* parent, QPair<int, int> position, QVector3D chunkDimensi
     this->blocks.resize(chunkDimensions.x(),vector<vector<Block*>>(chunkDimensions.y(),vector<Block*>(chunkDimensions.z())));
 
     for(int i = 0; i < chunkDimensions.x(); i++)
-        for(int j = 0; j < chunkDimensions.y(); j++)
-            for(int k = 0; k < chunkDimensions.z(); k++)
-                if(j<=64 || (j<= (64 + (chunkDimensions.x() - i - 1) + (chunkDimensions.z() - k - 1)))){
+        for(int k = 0; k < chunkDimensions.z(); k++){
+            float freq = 64.0f;
+            QVector3D blockWorldPos = this->getChunkWorldPosition() + QVector3D(i,0,k);
+            noise::module::Perlin noiseGen = noise::module::Perlin();
+            noiseGen.SetFrequency(freq);
+            noiseGen.SetOctaveCount(2);
+            noiseGen.SetLacunarity(0.1f);
+
+            double f = noiseGen.GetValue(blockWorldPos.x()/freq,blockWorldPos.z()/freq,0);
+            f = (f+1)/2;
+
+            //qDebug() << f << endl;
+            int maxLayer = (f * (chunkDimensions.y() - 1) / 20) + ((chunkDimensions.y() - 1) / 20);
+            int baseLayer = (chunkDimensions.y() - 1) / 8;
+
+            for(int j = 0; j < chunkDimensions.y(); j++){
+                if(j<=(maxLayer+baseLayer)){
                     blocks[i][j][k] = new Block(BlockType::Stone);
                 } else {
                     blocks[i][j][k] = new Block(BlockType::Air);
                 }
+            }
+        }
 }
 
 QPair<int, int> Chunk::getPosition() const

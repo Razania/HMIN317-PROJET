@@ -81,287 +81,15 @@ GeometryEngine::~GeometryEngine()
 }
 //! [0]
 
-void GeometryEngine::initCubeGeometry()
-{
-    // For cube we would need only 8 vertices but we have to
-    // duplicate vertex for each face because texture coordinate
-    // is different.
-    VertexData vertices[] = {
-        // Vertex data for face 0
-        {QVector3D(-1.0f, -1.0f,  1.0f), QVector2D(0.0f, 0.0f)},  // v0
-        {QVector3D( 1.0f, -1.0f,  1.0f), QVector2D(0.33f, 0.0f)}, // v1
-        {QVector3D(-1.0f,  1.0f,  1.0f), QVector2D(0.0f, 0.5f)},  // v2
-        {QVector3D( 1.0f,  1.0f,  1.0f), QVector2D(0.33f, 0.5f)}, // v3
-
-        // Vertex data for face 1
-        {QVector3D( 1.0f, -1.0f,  1.0f), QVector2D( 0.0f, 0.5f)}, // v4
-        {QVector3D( 1.0f, -1.0f, -1.0f), QVector2D(0.33f, 0.5f)}, // v5
-        {QVector3D( 1.0f,  1.0f,  1.0f), QVector2D(0.0f, 1.0f)},  // v6
-        {QVector3D( 1.0f,  1.0f, -1.0f), QVector2D(0.33f, 1.0f)}, // v7
-
-        // Vertex data for face 2
-        {QVector3D( 1.0f, -1.0f, -1.0f), QVector2D(0.66f, 0.5f)}, // v8
-        {QVector3D(-1.0f, -1.0f, -1.0f), QVector2D(1.0f, 0.5f)},  // v9
-        {QVector3D( 1.0f,  1.0f, -1.0f), QVector2D(0.66f, 1.0f)}, // v10
-        {QVector3D(-1.0f,  1.0f, -1.0f), QVector2D(1.0f, 1.0f)},  // v11
-
-        // Vertex data for face 3
-        {QVector3D(-1.0f, -1.0f, -1.0f), QVector2D(0.66f, 0.0f)}, // v12
-        {QVector3D(-1.0f, -1.0f,  1.0f), QVector2D(1.0f, 0.0f)},  // v13
-        {QVector3D(-1.0f,  1.0f, -1.0f), QVector2D(0.66f, 0.5f)}, // v14
-        {QVector3D(-1.0f,  1.0f,  1.0f), QVector2D(1.0f, 0.5f)},  // v15
-
-        // Vertex data for face 4
-        {QVector3D(-1.0f, -1.0f, -1.0f), QVector2D(0.33f, 0.0f)}, // v16
-        {QVector3D( 1.0f, -1.0f, -1.0f), QVector2D(0.66f, 0.0f)}, // v17
-        {QVector3D(-1.0f, -1.0f,  1.0f), QVector2D(0.33f, 0.5f)}, // v18
-        {QVector3D( 1.0f, -1.0f,  1.0f), QVector2D(0.66f, 0.5f)}, // v19
-
-        // Vertex data for face 5
-        {QVector3D(-1.0f,  1.0f,  1.0f), QVector2D(0.33f, 0.5f)}, // v20
-        {QVector3D( 1.0f,  1.0f,  1.0f), QVector2D(0.66f, 0.5f)}, // v21
-        {QVector3D(-1.0f,  1.0f, -1.0f), QVector2D(0.33f, 1.0f)}, // v22
-        {QVector3D( 1.0f,  1.0f, -1.0f), QVector2D(0.66f, 1.0f)}  // v23
-    };
-
-    // Indices for drawing cube faces using triangle strips.
-    // Triangle strips can be connected by duplicating indices
-    // between the strips. If connecting strips have opposite
-    // vertex order then last index of the first strip and first
-    // index of the second strip needs to be duplicated. If
-    // connecting strips have same vertex order then only last
-    // index of the first strip needs to be duplicated.
-    GLushort indices[] = {
-         0,  1,  2,  3,  3,     // Face 0 - triangle strip ( v0,  v1,  v2,  v3)
-         4,  4,  5,  6,  7,  7, // Face 1 - triangle strip ( v4,  v5,  v6,  v7)
-         8,  8,  9, 10, 11, 11, // Face 2 - triangle strip ( v8,  v9, v10, v11)
-        12, 12, 13, 14, 15, 15, // Face 3 - triangle strip (v12, v13, v14, v15)
-        16, 16, 17, 18, 19, 19, // Face 4 - triangle strip (v16, v17, v18, v19)
-        20, 20, 21, 22, 23      // Face 5 - triangle strip (v20, v21, v22, v23)
-    };
-
-//! [1]
-    // Transfer vertex data to VBO 0
-    arrayBuf.bind();
-    arrayBuf.allocate(vertices, 24 * sizeof(VertexData));
-
-    // Transfer index data to VBO 1
-    indexBuf.bind();
-    indexBuf.allocate(indices, 34 * sizeof(GLushort));
-//! [1]
-}
-
-//! [2]
-void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
-{
-    // Tell OpenGL which VBOs to use
-    arrayBuf.bind();
-    indexBuf.bind();
-
-    // Offset for position
-    quintptr offset = 0;
-
-    // Tell OpenGL programmable pipeline how to locate vertex position data
-    int vertexLocation = program->attributeLocation("a_position");
-    program->enableAttributeArray(vertexLocation);
-    program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
-    // Offset for texture coordinate
-    offset += sizeof(QVector3D);
-
-    // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
-    int texcoordLocation = program->attributeLocation("a_texcoord");
-    program->enableAttributeArray(texcoordLocation);
-    program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
-
-    // Draw cube geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLE_STRIP, indexBuf.size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-}
-//! [2]
-
-void GeometryEngine::initPlaneGeometry()
-{
-    //vertices
-    int xVerticesNumber = 4;
-    int yVerticesNumber = 4;
-    vector<VertexData> vertices(xVerticesNumber * yVerticesNumber);
-
-    float xSize = 3;
-    float ySize = 2;
-    float zSize = 2;
-
-    for (int i = 0; i < yVerticesNumber; ++i)
-        for (int j = 0; j < xVerticesNumber; ++j) {
-            float vertexXPos = (xSize * (((float) j)/(((float) xVerticesNumber)-1))) - (xSize/2);
-            float vertexYPos = -(ySize * (((float) i)/(((float) yVerticesNumber)-1))) +(ySize/2);
-            //float vertexZPos = 0;
-            //float vertexZPos = zSize*((vertexXPos+vertexYPos)/(xSize+ySize)) - (zSize/2);
-            float vertexZPos = zSize*(abs(vertexXPos*vertexYPos)/(xSize*ySize)) - (zSize/2);
-
-            float textXPos = (((float) j)/(((float) xVerticesNumber)-1));
-            float textYPos = (((float) i)/(((float) yVerticesNumber)-1));
-            vertices[i*xVerticesNumber + j] = VertexData{QVector3D(vertexXPos, vertexYPos,vertexZPos), QVector2D(textXPos, textYPos)};
-        }
-
-    // Indices for drawing
-    int nbIndices = ((yVerticesNumber - 1) * ((xVerticesNumber*2)+2)) - 2;
-    vector<GLushort> indices(nbIndices);
-    int index = 0;
-    for (int i = 0; i < yVerticesNumber-1; ++i){
-        if(i != 0){
-            indices[index] = i*xVerticesNumber;
-            index ++;
-        }
-        for (int j = 0; j < xVerticesNumber; ++j) {
-            indices[index] = i*xVerticesNumber+j;
-            index ++;
-            indices[index] = (i+1)*xVerticesNumber+j;
-            index ++;
-        }
-        if(i != yVerticesNumber-2){
-            indices[index] = (i+1)*xVerticesNumber+(xVerticesNumber-1);
-            index ++;
-        }
-    }
-
-    // Transfer vertex data to VBO 0
-    arrayBuf.bind();
-    arrayBuf.allocate(&vertices[0], xVerticesNumber * yVerticesNumber * sizeof(VertexData));
-
-    // Transfer index data to VBO 1
-    indexBuf.bind();
-    indexBuf.allocate(&indices[0], nbIndices * sizeof(GLushort));
-}
-
-void GeometryEngine::initHeightMapGeometry()
-{
-    //vertices
-    int xVerticesNumber = 16;
-    int yVerticesNumber = 16;
-    vector<VertexData> vertices(xVerticesNumber * yVerticesNumber);
-
-    float xSize = 4;
-    float ySize = 4;
-
-    for (int i = 0; i < yVerticesNumber; ++i)
-        for (int j = 0; j < xVerticesNumber; ++j) {
-            float vertexXPos = (xSize * (((float) j)/(((float) xVerticesNumber)-1))) - (xSize/2);
-            float vertexYPos = -(ySize * (((float) i)/(((float) yVerticesNumber)-1))) +(ySize/2);
-
-            float vertexZPos = 0;
-
-            float textXPos = (((float) j)/(((float) xVerticesNumber)-1));
-            float textYPos = (((float) i)/(((float) yVerticesNumber)-1));
-            vertices[i*xVerticesNumber + j] = VertexData{QVector3D(vertexXPos, vertexYPos,vertexZPos), QVector2D(textXPos, textYPos)};
-        }
-
-    // Indices for drawing
-    int nbIndices = ((yVerticesNumber - 1) * ((xVerticesNumber*2)+2)) - 2;
-    vector<GLushort> indices(nbIndices);
-    int index = 0;
-    for (int i = 0; i < yVerticesNumber-1; ++i){
-        if(i != 0){
-            indices[index] = i*xVerticesNumber;
-            index ++;
-        }
-        for (int j = 0; j < xVerticesNumber; ++j) {
-            indices[index] = i*xVerticesNumber+j;
-            index ++;
-            indices[index] = (i+1)*xVerticesNumber+j;
-            index ++;
-        }
-        if(i != yVerticesNumber-2){
-            indices[index] = (i+1)*xVerticesNumber+(xVerticesNumber-1);
-            index ++;
-        }
-    }
-
-    // Transfer vertex data to VBO 0
-    arrayBuf.bind();
-    arrayBuf.allocate(&vertices[0], xVerticesNumber * yVerticesNumber * sizeof(VertexData));
-
-    // Transfer index data to VBO 1
-    indexBuf.bind();
-    indexBuf.allocate(&indices[0], nbIndices * sizeof(GLushort));
-}
-
-void GeometryEngine::initObjGeometry()
-{
-    vector<QVector3D> objVertices;
-    vector<vector<int>> objIndices;
-
-    OBJIO::open(":/sphere.obj", objVertices, objIndices);
-
-    vector<VertexData> vertices(objVertices.size());
-    vector<GLushort> indices(objIndices.size());
-
-    float pi = 3.14159265f;
-    float minX = numeric_limits<float>::max(), maxX = numeric_limits<float>::min();
-    for (unsigned int i = 0; i < objVertices.size(); ++i){
-        if(objVertices[i].x()<minX)
-            minX = objVertices[i].x();
-        if(objVertices[i].x()>maxX)
-            maxX = objVertices[i].x();
-    }
-
-    float radius = maxX - minX;
-
-    for (unsigned int i = 0; i < objVertices.size(); ++i){
-        float textureCoordX = asin(objVertices[i].z() / radius)/pi + 0.5; //Calculate u coordinate according to formula
-        float textureCoordY = atan(objVertices[i].y()/objVertices[i].x())/2/pi; //Calculate v coordinate according to formula
-        vertices[i] = VertexData{objVertices[i], QVector2D(textureCoordX, textureCoordY)};
-    }
-
-    for (unsigned int i = 0; i < objIndices.size(); ++i){
-        indices.push_back(objIndices[i][0]);
-        indices.push_back(objIndices[i][1]);
-        indices.push_back(objIndices[i][2]);
-    }
-
-    // Transfer vertex data to VBO 0
-    arrayBuf.bind();
-    arrayBuf.allocate(&vertices[0], vertices.size() * sizeof(VertexData));
-
-    // Transfer index data to VBO 1
-    indexBuf.bind();
-    indexBuf.allocate(&indices[0], indices.size() * sizeof(GLushort));
-}
-
-void GeometryEngine::draObjGeometry(QOpenGLShaderProgram *program)
-{
-    // Tell OpenGL which VBOs to use
-    arrayBuf.bind();
-    indexBuf.bind();
-
-    // Offset for position
-    quintptr offset = 0;
-
-    // Tell OpenGL programmable pipeline how to locate vertex position data
-    int vertexLocation = program->attributeLocation("a_position");
-    program->enableAttributeArray(vertexLocation);
-    program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
-    // Offset for texture coordinate
-    offset += sizeof(QVector3D);
-
-    // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
-    int texcoordLocation = program->attributeLocation("a_texcoord");
-    program->enableAttributeArray(texcoordLocation);
-    program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
-
-    // Draw cube geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLES, indexBuf.size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
-}
-
-void GeometryEngine::initMeshObjGeometry(std::vector<VertexData> vertices, std::vector<GLushort> indices)
+void GeometryEngine::initMeshObjGeometry(std::vector<VertexData>* vertices, std::vector<GLushort>* indices)
 {
     // Transfer vertex data to VBO 0
     arrayBuf.bind();
-    arrayBuf.allocate(&vertices[0], vertices.size() * sizeof(VertexData));
+    arrayBuf.allocate(&((*vertices)[0]), vertices->size() * sizeof(VertexData));
 
     // Transfer index data to VBO 1
     indexBuf.bind();
-    indexBuf.allocate(&indices[0], indices.size() * sizeof(GLushort));
+    indexBuf.allocate(&((*indices)[0]), indices->size() * sizeof(GLushort));
 }
 
 void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
@@ -378,6 +106,15 @@ void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
     program->enableAttributeArray(vertexLocation);
     program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
+    // Offset for normaldata
+    offset += sizeof(QVector3D);
+
+    // Tell OpenGL programmable pipeline how to locate vertex normal data
+    int normalLocation = program->attributeLocation("a_normal");
+    program->enableAttributeArray(normalLocation);
+    program->setAttributeBuffer(normalLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+
     // Offset for texture coordinate
     offset += sizeof(QVector3D);
 
@@ -386,6 +123,14 @@ void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
     program->enableAttributeArray(texcoordLocation);
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
+    // Offset for texture coordinate
+    offset += sizeof(QVector2D);
+
+    // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
+    int texLayerLocation = program->attributeLocation("a_texLayer");
+    program->enableAttributeArray(texLayerLocation);
+    program->setAttributeBuffer(texLayerLocation, GL_INT, offset, 2, sizeof(VertexData));
+    glValidateProgram(0);
     // Draw cube geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLES, indexBuf.size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
 }

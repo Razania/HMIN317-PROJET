@@ -1,12 +1,11 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-enum class BlockType{
-    Air = 0,
-    Stone = 1,
-    Dirt = 2
-};
+#include <Misc/Generic.h>
+#include <Misc/enum.h>
 
+BETTER_ENUM(FaceDirection, char, Bottom, Top, Right, Left, Front, Back);
+BETTER_ENUM(BlockType, char, Air, Stone, Dirt);
 
 class Block
 {

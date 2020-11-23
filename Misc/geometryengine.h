@@ -59,7 +59,9 @@
 struct VertexData
 {
     QVector3D position;
+    QVector3D normal;
     QVector2D texCoord;
+    int texLayer;
 };
 
 class GeometryEngine : protected QOpenGLFunctions_3_1
@@ -69,19 +71,10 @@ public:
     GeometryEngine();
     virtual ~GeometryEngine();
 
-    void drawCubeGeometry(QOpenGLShaderProgram *program);
-    void drawPlaneGeometry(QOpenGLShaderProgram *program);
-    void draObjGeometry(QOpenGLShaderProgram *program);
+    void initMeshObjGeometry(std::vector<VertexData>* vertices, std::vector<GLushort>* indices);
     void drawMeshObjGeometry(QOpenGLShaderProgram *program);
 
-    void initMeshObjGeometry(std::vector<VertexData> vertices, std::vector<GLushort> indices);
-
-
 private:
-    void initCubeGeometry();
-    void initPlaneGeometry();
-    void initHeightMapGeometry();
-    void initObjGeometry();
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;

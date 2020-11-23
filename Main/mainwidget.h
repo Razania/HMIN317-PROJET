@@ -63,12 +63,13 @@
 #include <QBasicTimer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
+#include <QOpenGLExtraFunctions>
 
 typedef QMap<QString, bool> InputStatus;
 
 class GeometryEngine;
 
-class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_1
+class MainWidget : public QOpenGLWidget, public QOpenGLExtraFunctions
 {
     Q_OBJECT
 
@@ -76,6 +77,8 @@ public:
     static constexpr float CAMERA_MOVEMENT_SPEED = 0.01f;
     explicit MainWidget(QWidget *parent = 0);
     ~MainWidget();
+
+    QOpenGLShaderProgram* getProgram();
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -106,6 +109,7 @@ private:
 
     Camera camera;
     QVector3D cameraCurrentVelocityNorm;
+    QVector3D cameraCurrentRotationNorm;
     InputStatus isPressed;
 
     QMatrix4x4 projection;

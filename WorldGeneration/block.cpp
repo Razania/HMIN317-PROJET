@@ -7,9 +7,9 @@ BlockType Block::getType() const
 
 bool Block::canDrawFaceTowardBlock(Block* targetBlock)
 {
-    if(this->type == BlockType::Air)
+    if(this->type._value == BlockType::Air)
         return false;
-    if(targetBlock->getType() != BlockType::Air)
+    if(targetBlock->getType()._value != BlockType::Air)
         return false;
 
     return true;

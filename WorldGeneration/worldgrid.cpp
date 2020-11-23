@@ -1,8 +1,9 @@
 #include "worldgrid.h"
 
-WorldGrid::WorldGrid(QVector3D chunkDimensions)
-    : chunkDimensions(chunkDimensions)
-{}
+WorldGrid::WorldGrid(int seed, QVector3D chunkDimensions)
+    : chunkDimensions(chunkDimensions), seed(seed)
+{\
+}
 
 Chunk* WorldGrid::getChunkAtWorldPos(QVector3D worldPos)
 {
@@ -39,4 +40,9 @@ Chunk *WorldGrid::getChunk(QPair<int, int> chunkPos)
 
 void WorldGrid::generateChunk(QPair<int, int> chunkPos){
     this->chunks[chunkPos] = new Chunk(this, chunkPos, this->chunkDimensions);
+}
+
+int WorldGrid::getSeed() const
+{
+    return seed;
 }
