@@ -1,5 +1,5 @@
-#version 330 core
-uniform sampler3D textureList;
+#version 410 core
+uniform sampler2DArray textureList;
 uniform sampler2D texture;
 
 in vec2 texCoords;
@@ -24,7 +24,9 @@ void main()
 
     vec3 result = ambient + diffuse;
 
+
     gl_FragColor = vec4(result, 1) * texture2D(texture,texCoords);
+    //gl_FragColor = /*vec4(result, 1) **/ texture2DArray(textureList,vec3(texCoords,0));
 }
 //! [0]
 

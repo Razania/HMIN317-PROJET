@@ -40,34 +40,30 @@ TextureLoader::TextureLoader(MainWidget* context) : context(context)
         }
     }
 
-//    this->texturesList = new QOpenGLTexture(QOpenGLTexture::Target3D);
-//    texturesList->create();
-//    texturesList->bind(2);
+    this->context->glActiveTexture(GL_TEXTURE0);
 
-//    texturesList->setMipLevels(0);
-//    texturesList->generateMipMaps();
+    this->texturesList = new QOpenGLTexture(QOpenGLTexture::Target2DArray);
+    texturesList->create();
+    texturesList->bind();
 
-//    texturesList->setSize(listOfTextures[0]->width(), listOfTextures[0]->height(), listOfTextures.size());
-//    texturesList->setFormat(QOpenGLTexture::RGBA32I);
+    texturesList->setMipLevels(0);
+    texturesList->setSize(listOfTextures[0]->width(), listOfTextures[0]->height(), listOfTextures.size());
 
-//    texturesList->setMinificationFilter(QOpenGLTexture::Linear);
-//    texturesList->setMagnificationFilter(QOpenGLTexture::Linear);
-//    texturesList->setWrapMode(QOpenGLTexture::ClampToEdge);
-//    texturesList->allocateStorage(QOpenGLTexture::PixelFormat::BGRA, QOpenGLTexture::PixelType::UInt32);
+    texturesList->setMinificationFilter(QOpenGLTexture::Linear);
+    texturesList->setMagnificationFilter(QOpenGLTexture::Linear);
+    texturesList->setWrapMode(QOpenGLTexture::ClampToEdge);
+    texturesList->allocateStorage(QOpenGLTexture::PixelFormat::BGRA, QOpenGLTexture::PixelType::UInt32);
 
-//    GLuint textureID = 0;
-//    this->context->glGenTextures(1,&textureID);
-//    this->context->glBindTexture(GL_TEXTURE_3D,textureID);
-//    this->context->glTexStorage3D(GL_TEXTURE_3D, 1, GL_BGRA, listOfTextures[0]->width(), listOfTextures[0]->height(), listOfTextures.size());
+    texturesList->generateMipMaps();
 
-//    //this->context->glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, listOfTextures[0]->width(), listOfTextures[0]->height(), 1, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, listOfTextures[0]->data_ptr());
-//    //texturesList->setData(0, 0, 0, listOfTextures[0]->width(), listOfTextures[0]->height(), listOfTextures[0]->depth(), 0, QOpenGLTexture::PixelFormat::BGRA, QOpenGLTexture::PixelType::UInt32_RGBA8_Rev, listOfTextures[0]->data_ptr());
-//    this->context->glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_TRUE);
-//    int layerCount = 0;
-//    for(QImage* texture : listOfTextures){
-//        this->context->glTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, layerCount++, listOfTextures[0]->width(), listOfTextures[0]->height(), listOfTextures.size(), GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, texture->data_ptr());
-//    }
-//    this->context->glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
+
+    //this->context->glTexStorage3D(GL_TEXTURE_2D_ARRAY, 0, GL_BGRA, listOfTextures[0]->width(), listOfTextures[0]->height(), listOfTextures.size());
+    //this->context->glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, listOfTextures[0]->width(), listOfTextures[0]->height(), 1, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, listOfTextures[0]->data_ptr());
+
+    int layerCount = 0;
+    for(QImage* texture : listOfTextures){
+        texturesList->setData(0, 0, layerCount++, listOfTextures[0]->width(), listOfTextures[0]->height(), listOfTextures[0]->depth(), 0, QOpenGLTexture::PixelFormat::BGRA, QOpenGLTexture::PixelType::UInt32_RGBA8_Rev, texture->data_ptr());
+    }
 }
 
 int TextureLoader::getTextureIndex_Unifaced(BlockType blockType) const

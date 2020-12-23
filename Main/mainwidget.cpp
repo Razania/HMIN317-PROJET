@@ -237,8 +237,9 @@ void MainWidget::paintGL()
     glEnable(GL_CULL_FACE);
     glDisable(GL_CULL_FACE);
 
-    rockTexture->bind(0);
-    program.setUniformValue("texture", 0);
+    rockTexture->bind(GL_TEXTURE1);
+    program.setUniformValue("texture", GL_TEXTURE1);
+
 
     sceneRoot->Update();
     sceneRoot->Draw(&program,geometries, projection,this->camera.getViewMatrix());
@@ -313,13 +314,13 @@ void MainWidget::updateCameraVelNorm(){
     QVector3D newRotNorm = QVector3D(0,0,0);
 
     if(this->isPressed.value("w"))
-        newVelNorm += this->camera.getCameraDirection()*2;
+        newVelNorm += this->camera.getCameraDirection()*20;
     if(this->isPressed.value("s"))
-        newVelNorm -= this->camera.getCameraDirection()*2;
+        newVelNorm -= this->camera.getCameraDirection()*20;
     if(this->isPressed.value("d"))
-        newVelNorm += this->camera.getCameraRight()*2;
+        newVelNorm += this->camera.getCameraRight()*20;
     if(this->isPressed.value("a"))
-        newVelNorm -= this->camera.getCameraRight()*2;
+        newVelNorm -= this->camera.getCameraRight()*20;
 
     if(this->isPressed.value(" "))
         newVelNorm += this->camera.getCameraUp()*15;

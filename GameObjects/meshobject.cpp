@@ -76,8 +76,8 @@ void MeshObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries,
     program->setUniformValue("v_matrix", view);
     program->setUniformValue("p_matrix", projection);
 
-    texture->bind(textureIndex);
-    program->setUniformValue("texture", textureIndex);
+//    texture->bind(textureIndex);
+//    program->setUniformValue("texture", textureIndex);
 
     geometries->drawMeshObjGeometry(program);
 
