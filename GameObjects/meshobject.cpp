@@ -2,7 +2,6 @@
 #include <vector>
 #include <QVector3D>
 #include <Misc/geometryengine.h>
-using namespace std;
 #include <Misc/BasicIO.h>
 
 MeshObject::MeshObject(std::string & modelName, QString textureName)
@@ -19,8 +18,8 @@ MeshObject::MeshObject(std::string & modelName, QString textureName)
         this->textureIndex += count * character.unicode();
     }
 
-    vector<QVector3D> objVertices;
-    vector<vector<int>> objIndices;
+    std::vector<QVector3D> objVertices;
+    std::vector<std::vector<int>> objIndices;
 
     OBJIO::open(modelName, objVertices, objIndices);
 
@@ -52,8 +51,8 @@ MeshObject::MeshObject(std::string & modelName, QString textureName,Transform* t
         this->textureIndex += count * character.unicode();
     }
 
-    vector<QVector3D> objVertices;
-    vector<vector<int>> objIndices;
+    std::vector<QVector3D> objVertices;
+    std::vector<std::vector<int>> objIndices;
 
     OBJIO::open(modelName, objVertices, objIndices);
 

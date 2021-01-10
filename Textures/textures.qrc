@@ -1,13 +1,9 @@
 <RCC>
     <qresource prefix="/">
+        <file>dirt.png</file>
         <file>grassBottom.png</file>
         <file>grassSide.png</file>
         <file>grassTop.png</file>
-        <file>dirtBottom.png</file>
-        <file>dirtSide.png</file>
-        <file>dirtTop.png</file>
-        <file>stoneBottom.png</file>
-        <file>stoneSide.png</file>
-        <file>stoneTop.png</file>
+        <file>stone.png</file>
     </qresource>
 </RCC>

@@ -62,7 +62,7 @@
 #include <WorldGeneration/worldgrid.h>
 #include <WorldGeneration/chunk.h>
 
-vector<ChunkGameObject*> chunkObjects;
+std::vector<ChunkGameObject*> chunkObjects;
 
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
@@ -73,10 +73,10 @@ MainWidget::MainWidget(QWidget *parent) :
     snowrockTexture(0),
     angularSpeed(0)
 {
-    fps = 60;
+    fps = 144;
     cameraCurrentVelocityNorm = QVector3D(0,0,0);
     cameraCurrentRotationNorm = QVector3D(0,0,0);
-    camera = Camera(QVector3D(0,90.0f,0), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
+    camera = Camera(QVector3D(0,32.0f,0), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
 }
 
 MainWidget::~MainWidget()
@@ -158,16 +158,22 @@ void MainWidget::initializeGL()
 
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
-glEnable(GL_TEXTURE_2D_ARRAY);
+
+    // Enable polygon mode
+    //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
+    glEnable(GL_TEXTURE_2D_ARRAY);
+
     // Enable back face culling
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
 
     geometries = new GeometryEngine;
     this->sceneRoot = new GameObject();
 
     WorldGrid worldGrid = WorldGrid(1,QVector3D(16,256,16));
 
-    short viewRange = 4;
+    short viewRange = 16;
 
     for(short i = -(abs(viewRange)); i <= (abs(viewRange)); i++)
         for(short j = -(abs(viewRange)); j <= (abs(viewRange)); j++)
@@ -205,11 +211,6 @@ void MainWidget::initShaders()
 void MainWidget::initTextures()
 {
     TextureLoader::initInstance(this);
-
-    rockTexture = new QOpenGLTexture(QImage(":/stoneSide.png").mirrored());
-    rockTexture->setMinificationFilter(QOpenGLTexture::Nearest);
-    rockTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    rockTexture->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void MainWidget::resizeGL(int w, int h)
@@ -231,15 +232,6 @@ void MainWidget::paintGL()
 {
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    glEnable(GL_TEXTURE_2D_ARRAY);
-    // Enable back face culling
-    glEnable(GL_CULL_FACE);
-    glDisable(GL_CULL_FACE);
-
-    rockTexture->bind(GL_TEXTURE1);
-    program.setUniformValue("texture", GL_TEXTURE1);
-
 
     sceneRoot->Update();
     sceneRoot->Draw(&program,geometries, projection,this->camera.getViewMatrix());

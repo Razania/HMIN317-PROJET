@@ -127,9 +127,11 @@ void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
     offset += sizeof(QVector2D);
 
     // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
-    int texLayerLocation = program->attributeLocation("a_texLayer");
+    int texLayerLocation = program->attributeLocation("a_texlayer");
     program->enableAttributeArray(texLayerLocation);
-    program->setAttributeBuffer(texLayerLocation, GL_INT, offset, 2, sizeof(VertexData));
+    glVertexAttribIPointer(texLayerLocation, 1, GL_UNSIGNED_INT, sizeof(VertexData), (GLvoid*)(sizeof(QVector3D) + sizeof(QVector3D) + sizeof(QVector2D)));
+    //program->setAttributeBuffer(texLayerLocation, GL_UNSIGNED_INT, offset, 1, sizeof(VertexData));
+
     glValidateProgram(0);
     // Draw cube geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLES, indexBuf.size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);

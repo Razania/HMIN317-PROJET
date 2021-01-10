@@ -61,7 +61,7 @@ struct VertexData
     QVector3D position;
     QVector3D normal;
     QVector2D texCoord;
-    int texLayer;
+    unsigned int texLayer;
 };
 
 class GeometryEngine : protected QOpenGLFunctions_3_1
