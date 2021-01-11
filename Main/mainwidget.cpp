@@ -54,8 +54,7 @@
 
 #include <math.h>
 #include <Misc/Generic.h>
-#include <GameObjects/meshobject.h>
-#include <GameObjects/astronomicalbodyobject.h>
+#include <GameObjects/skyboxgameobject.h>
 #include <GameObjects/chunkgameobject.h>
 #include <GameObjects/camera.h>
 #include <Misc/textureloader.h>
@@ -67,16 +66,14 @@ std::vector<ChunkGameObject*> chunkObjects;
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
-    heightmap(0),
-    grassTexture(0),
-    rockTexture(0),
-    snowrockTexture(0),
     angularSpeed(0)
 {
     fps = 144;
     cameraCurrentVelocityNorm = QVector3D(0,0,0);
     cameraCurrentRotationNorm = QVector3D(0,0,0);
-    camera = Camera(QVector3D(0,32.0f,0), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
+    camera = Camera(QVector3D(0,0,0), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
+
+    skybox = new SkyboxGameObject();
 }
 
 MainWidget::~MainWidget()
@@ -84,10 +81,6 @@ MainWidget::~MainWidget()
     // Make sure the context is current when deleting the texture
     // and the buffers.
     makeCurrent();
-    delete heightmap;
-    delete grassTexture;
-    delete snowrockTexture;
-    delete rockTexture;
     delete geometries;
     doneCurrent();
 }
@@ -165,8 +158,8 @@ void MainWidget::initializeGL()
     glEnable(GL_TEXTURE_2D_ARRAY);
 
     // Enable back face culling
-    //glEnable(GL_CULL_FACE);
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    //glDisable(GL_CULL_FACE);
 
     geometries = new GeometryEngine;
     this->sceneRoot = new GameObject();
@@ -191,26 +184,40 @@ void MainWidget::initializeGL()
 
 void MainWidget::initShaders()
 {
-    // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+    // Init main Shader Program
+    if (!mainProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+        close();
+    if (!mainProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+        close();
+    if (!mainProgram.link())
         close();
 
-    // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+    // Init skybox Shader Program
+    if (!skyboxProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/skybox_vshader.glsl"))
         close();
-
-    // Link shader pipeline
-    if (!program.link())
+    if (!skyboxProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/skybox_fshader.glsl"))
         close();
-
-    // Bind shader pipeline for use
-    if (!program.bind())
+    if (!skyboxProgram.link())
         close();
 }
 
 void MainWidget::initTextures()
 {
     TextureLoader::initInstance(this);
+
+    if (!mainProgram.bind())
+        close();
+
+    TextureLoader::instance()->loadBlocksTextures();
+
+    mainProgram.release();
+
+    if (!skyboxProgram.bind())
+        close();
+
+    TextureLoader::instance()->loadSkyboxTextures();
+
+    skyboxProgram.release();
 }
 
 void MainWidget::resizeGL(int w, int h)
@@ -233,8 +240,10 @@ void MainWidget::paintGL()
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    skybox->Draw(&skyboxProgram, geometries, projection, this->camera);
+
     sceneRoot->Update();
-    sceneRoot->Draw(&program,geometries, projection,this->camera.getViewMatrix());
+    sceneRoot->Draw(&mainProgram,geometries, projection,this->camera);
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *ev)

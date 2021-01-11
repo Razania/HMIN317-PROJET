@@ -4,7 +4,58 @@
 #include <QOpenGLFunctions_3_1>
 #include <QOpenGLExtraFunctions>
 
-TextureLoader::TextureLoader(MainWidget* context) : context(context)
+TextureLoader::TextureLoader(MainWidget* context) : context(context) {}
+
+void TextureLoader::loadSkyboxTextures()
+{
+    std::vector<QImage> listOfTextures;
+    context->makeCurrent();
+
+    std::string baseName = ":/skybox";
+    std::string ext = ".png";
+
+    for(FaceDirection faceDirection : FaceDirection::_values()){
+        QString fileName = QString((baseName + faceDirection._to_string() + ext).c_str());
+        if(!fileExists(fileName))
+            qDebug("Missing Texture %s", fileName.toStdString().c_str());
+
+        QImage textureImage = QImage(fileName);
+        listOfTextures.push_back(textureImage);
+    }
+
+    context->glActiveTexture(GL_TEXTURE1);
+    context->glGenTextures(1, &skyboxTextureIndex);
+    context->glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTextureIndex);
+
+    unsigned int incr = 0;
+    for(QImage image : listOfTextures){
+        if(image.format() != QImage::Format::Format_ARGB32)
+            image = image.convertToFormat(QImage::Format::Format_ARGB32);
+
+        if(image.width() != 1024)
+            image = image.scaledToWidth(1024);
+        if(image.height() != 1024)
+            image = image.scaledToHeight(1024);
+
+        context->glTexImage2D(
+               GL_TEXTURE_CUBE_MAP_POSITIVE_X + (incr++),
+               0, GL_RGBA8, image.width(), image.height(), 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, image.bits()
+           );
+    }
+
+    context->glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    context->glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    context->glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    context->glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    context->glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+//    uchar* bits = ((uchar*) malloc(sizeof(uchar) * 1024 * 1024 * 4));
+//    glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + 5, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, bits);
+//    for(int i = (1024 * 1024 * 4) - 4; i<(1024 * 1024 * 4); i++)
+//        qDebug("%d ", bits[i]);
+}
+
+void TextureLoader::loadBlocksTextures()
 {
     std::vector<QImage> listOfTextures;
     context->makeCurrent();
@@ -66,11 +117,13 @@ TextureLoader::TextureLoader(MainWidget* context) : context(context)
     context->glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     context->glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
     context->glTexParameterf(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    context->glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
-    uchar* bits = ((uchar*) malloc(sizeof(uchar) * 4 * 480 * 480 * depth));
-    glGetTexImage(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, GL_UNSIGNED_BYTE, bits);
-    for(int i = (4 * 480 * 480 * 3); i<(4 * 480 * 480 * 3) + 4; i++)
-        qDebug("%d ", bits[i]);
+
+//    uchar* bits = ((uchar*) malloc(sizeof(uchar) * 4 * 480 * 480 * depth));
+//    glGetTexImage(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA, GL_UNSIGNED_BYTE, bits);
+//    for(int i = (4 * 480 * 480 * 3); i<(4 * 480 * 480 * 3) + 4; i++)
+//        qDebug("%d ", bits[i]);
 }
 
 MainWidget *TextureLoader::getContext() const
@@ -137,6 +190,11 @@ QString TextureLoader::getTextureName(BlockType blockType) const
     std::string textureName = ":/" + blockTypeName + ".png";
 
     return QString(textureName.c_str());
+}
+
+GLuint TextureLoader::getSkyboxTextureIndex() const
+{
+    return skyboxTextureIndex;
 }
 
 GLuint TextureLoader::getTextureArrayIndex()

@@ -28,13 +28,21 @@ public:
     GLuint getTextureArrayIndex();
     MainWidget *getContext() const;
 
+    GLuint getSkyboxTextureIndex() const;
+
+    void loadSkyboxTextures();
+    void loadBlocksTextures();
+
 private:
     TextureLoader(MainWidget* context);
 
     MainWidget* context;
+
     inline static TextureLoader * _instance = nullptr;
+
     GLuint texturesListIndex;
     QMap<QPair<BlockType, TextureFaceDirection>, unsigned int> texturesIndexList;
+
 
     TextureFaceDirection getTextureFaceDirection(FaceDirection faceDirection) const;
 
@@ -44,6 +52,8 @@ private:
     QString getTextureName(BlockType blockType, TextureFaceDirection textureFaceDirection) const;
     QString getTextureName(BlockType blockType, FaceDirection faceDirection) const;
     QString getTextureName(BlockType blockType) const;
+
+    GLuint skyboxTextureIndex;
 };
 
 #endif // TEXTURELOADER_H

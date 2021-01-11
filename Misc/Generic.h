@@ -2,11 +2,60 @@
 #define GENERIC_H
 
 #include <QFileInfo>
+#include <QVector3D>
+#include <QVector2D>
 #include <regex>
 #include <Misc/enum.h>
 
-BETTER_ENUM(FaceDirection, char, Bottom, Top, Right, Left, Front, Back);
+BETTER_ENUM(FaceDirection, char, Right, Left, Top, Bottom, Back, Front);
 BETTER_ENUM(BlockType, char, Air, Stone, Dirt, Grass);
+
+//Vertices
+struct BasicVertexData
+{
+    QVector3D position;
+    QVector3D normal;
+    QVector2D texCoord;
+    unsigned int texLayer;
+};
+
+struct SkyboxVertexData
+{
+    QVector3D position;
+};
+
+//Lights
+struct DirectionalLight{
+    QVector3D direction;
+
+    QVector3D ambient;
+    QVector3D diffuse;
+    QVector3D specular;
+};
+
+struct PointLight{
+    QVector3D position;
+
+    float constant;
+    float linear;
+    float quadratic;
+
+    QVector3D ambient;
+    QVector3D diffuse;
+    QVector3D specular;
+};
+
+struct SpotLight{
+    QVector3D direction;
+    QVector3D position;
+    float cutoff;
+
+    QVector3D ambient;
+    QVector3D diffuse;
+    QVector3D specular;
+};
+
+
 
 #include <type_traits>
 template < typename C, C beginVal, C endVal>

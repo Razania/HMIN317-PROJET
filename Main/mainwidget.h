@@ -96,16 +96,17 @@ protected:
 
     void updateCameraVelNorm();
 private:
+    GameObject* skybox;
     GameObject* sceneRoot;
+
+
     QBasicTimer timer;
     float fps;
-    QOpenGLShaderProgram program;
-    GeometryEngine *geometries;
 
-    QOpenGLTexture *heightmap;
-    QOpenGLTexture *grassTexture;
-    QOpenGLTexture *rockTexture;
-    QOpenGLTexture *snowrockTexture;
+    QOpenGLShaderProgram mainProgram;
+    QOpenGLShaderProgram skyboxProgram;
+
+    GeometryEngine *geometries;
 
     Camera camera;
     QVector3D cameraCurrentVelocityNorm;

@@ -5,5 +5,11 @@
         <file>grassSide.png</file>
         <file>grassTop.png</file>
         <file>stone.png</file>
+        <file>skyboxBack.png</file>
+        <file>skyboxFront.png</file>
+        <file>skyboxLeft.png</file>
+        <file>skyboxRight.png</file>
+        <file>skyboxTop.png</file>
+        <file>skyboxBottom.png</file>
     </qresource>
 </RCC>

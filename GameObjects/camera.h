@@ -20,6 +20,8 @@ public:
     void setCameraToOrbitalMode();
 
     QMatrix4x4 getViewMatrix();
+    QMatrix4x4 getOriginViewMatrix();
+
 
     QVector3D getCameraDirection();
     QVector3D getCameraRight();
