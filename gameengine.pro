@@ -10,6 +10,7 @@ SOURCES += \
     GameObjects/pointlightobject.cpp \
     GameObjects/skyboxgameobject.cpp \
     GameObjects/spotlightobject.cpp \
+    GameObjects/boxcollider.cpp \
     Main/main.cpp \
     Main/mainwidget.cpp \
     GameObjects/camera.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
     GameObjects/transform.cpp \
     GameObjects/chunkgameobject.cpp \
     Misc/lightningengine.cpp \
+    WorldGeneration/boxcollider.cpp \
     WorldGeneration/chunk.cpp \
     WorldGeneration/worldgrid.cpp \
     WorldGeneration/block.cpp \
@@ -65,6 +67,7 @@ HEADERS += \
     GameObjects/pointlightobject.h \
     GameObjects/skyboxgameobject.h \
     GameObjects/spotlightobject.h \
+    GameObjects/boxcollider.h \
     Main/mainwidget.h \
     GameObjects/camera.h \
     GameObjects/gameobject.h \
@@ -74,6 +77,7 @@ HEADERS += \
     Misc/enum.h \
     Misc/lightningengine.h \
     PerlinNoise/PerlinNoise.hpp \
+    WorldGeneration/boxcollider.h \
     WorldGeneration/chunk.h \
     WorldGeneration/worldgrid.h \
     WorldGeneration/block.h \
@@ -395,6 +399,3 @@ DISTFILES += \
     noise/src/Sources \
     noise/src/win32/libnoise.def \
     noise/src/win32/noise.aps
-
-
-

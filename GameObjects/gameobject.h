@@ -4,6 +4,7 @@ class GameObject;
 
 #include <GameObjects/transform.h>
 #include <GameObjects/camera.h>
+#include <GameObjects/boxcollider.h>
 #include <Misc/geometryengine.h>
 #include <QOpenGLShaderProgram>
 
@@ -15,7 +16,7 @@ class GameObject
         GameObject();
         GameObject(Transform* transform);
         Transform* transform;
-
+        BoxCollider boxCollider;
         virtual void Start();
         virtual void Update();
 
