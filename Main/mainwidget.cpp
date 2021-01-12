@@ -53,6 +53,7 @@
 #include <QMouseEvent>
 
 #include <math.h>
+#include <iostream>
 #include <Misc/Generic.h>
 #include <GameObjects/skyboxgameobject.h>
 #include <GameObjects/chunkgameobject.h>
@@ -61,8 +62,12 @@
 #include <Misc/textureloader.h>
 #include <WorldGeneration/worldgrid.h>
 #include <WorldGeneration/chunk.h>
+#include <QTimer>
 
 std::vector<ChunkGameObject*> chunkObjects;
+
+int X = 0;
+int Y = 0;
 
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
@@ -77,6 +82,15 @@ MainWidget::MainWidget(QWidget *parent) :
     skybox = new SkyboxGameObject();
 
     lightning = new LightningEngine();
+
+    tab = chargerTexture();
+    label = new QLabel(this);
+    entier = 0;
+    QPixmap image = QPixmap(tab[entier]);
+    QPixmap imageResize;
+    imageResize = image.scaled(100,100);
+
+    label->setPixmap(imageResize);
 }
 
 MainWidget::~MainWidget()
@@ -92,6 +106,32 @@ void MainWidget::mousePressEvent(QMouseEvent *e)
 {
     // Save mouse press position
     mousePressPosition = QVector2D(e->localPos());
+}
+
+void MainWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    QVector3D newRotNorm = QVector3D(0,0,0);
+    if(e->buttons() == Qt::RightButton){
+        if(e->localPos().x() > X){
+            newRotNorm -= QVector3D(0,1,0);
+            X = e->localPos().x();
+        }
+        else if(e->localPos().x() < X){
+            newRotNorm += QVector3D(0,1,0);
+            X = e->localPos().x();
+        }
+        if(e->localPos().y() > Y){
+            newRotNorm -= QVector3D(1,0,0);
+            Y = e->localPos().y();
+        }
+        else if(e->localPos().y() < Y){
+            newRotNorm += QVector3D(1,0,0);
+            Y = e->localPos().y();
+        }
+        QVector3D vec = QVector3D(-e->localPos().y()+540, -e->localPos().x(), 0);
+
+        this->camera.setCameraRotation(vec);
+    }
 }
 
 void MainWidget::mouseReleaseEvent(QMouseEvent *e)
@@ -111,6 +151,29 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
 
     // Increase angular speed
     angularSpeed += acc;
+}
+
+QVector<QString> MainWidget::chargerTexture(){
+    QVector<QString> tab;
+    tab.push_back(":/grassBottom.png");
+    tab.push_back(":/grassSide.png");
+    tab.push_back(":/grassTop.png");
+    tab.push_back(":/stoneBottom.png");
+    return tab;
+}
+
+void MainWidget::changerTexture(){
+    cout << entier << " " << tab.size() << endl;
+    if(entier < tab.size()-1)
+        entier++;
+    else
+        entier = 0;
+
+    QPixmap image = QPixmap(tab[entier]);
+    QPixmap imageResize;
+    imageResize = image.scaled(100,100);
+
+    label->setPixmap(imageResize);
 }
 
 void MainWidget::timerEvent(QTimerEvent *)
@@ -272,11 +335,11 @@ void MainWidget::keyPressEvent(QKeyEvent *ev)
     if(ev->key() == Qt::Key_Control && isPressed.find("ctrl") == isPressed.end())
         isPressed.insert("ctrl",false);
 
-    if(ev->text() == "w" && !isPressed.value(ev->text()))
+    if(ev->text() == "z" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
     else if(ev->text() == "s" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "a" && !isPressed.value(ev->text()))
+    else if(ev->text() == "q" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
     else if(ev->text() == "d" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
@@ -287,27 +350,22 @@ void MainWidget::keyPressEvent(QKeyEvent *ev)
         else if(this->camera.getCameraMode() == this->camera.CAMERA_MODE_STATIONARY)
             this->camera.setCameraToOrbitalMode();
         isPressed.find(ev->text()).value() = true;
-    }else if(ev->text() == " " && !isPressed.value(ev->text()))
+    }
+    else if(ev->text() == " " && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
     else if(ev->key() == Qt::Key_Control && !isPressed.value("ctrl"))
             isPressed.find("ctrl").value() = true;
-    else if(ev->text() == "r" && !isPressed.value(ev->text()))
-            isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "f" && !isPressed.value(ev->text()))
-            isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "q" && !isPressed.value(ev->text()))
-            isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "e" && !isPressed.value(ev->text()))
+    else if(ev->text() == "t" && !isPressed.value(ev->text()))
             isPressed.find(ev->text()).value() = true;
 }
 
 void MainWidget::keyReleaseEvent(QKeyEvent *ev)
 {
-    if(ev->text() == "w" && isPressed.value(ev->text()))
+    if(ev->text() == "z" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
     else if(ev->text() == "s" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "a" && isPressed.value(ev->text()))
+    else if(ev->text() == "q" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
     else if(ev->text() == "d" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
@@ -317,43 +375,31 @@ void MainWidget::keyReleaseEvent(QKeyEvent *ev)
         isPressed.find(ev->text()).value() = false;
     else if(ev->key() == Qt::Key_Control && isPressed.value("ctrl"))
         isPressed.find("ctrl").value() = false;
-    else if(ev->text() == "r" && isPressed.value(ev->text()))
-        isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "f" && isPressed.value(ev->text()))
-        isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "q" && isPressed.value(ev->text()))
-        isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "e" && isPressed.value(ev->text()))
+    else if(ev->text() == "t" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
 
+    if(ev->key() == Qt::Key_T){
+        changerTexture();
+    }
 }
 
 void MainWidget::updateCameraVelNorm(){
     QVector3D newVelNorm = QVector3D(0,0,0);
     QVector3D newRotNorm = QVector3D(0,0,0);
 
-    if(this->isPressed.value("w"))
+    if(this->isPressed.value("z"))
         newVelNorm += this->camera.getCameraDirection()*20;
     if(this->isPressed.value("s"))
         newVelNorm -= this->camera.getCameraDirection()*20;
     if(this->isPressed.value("d"))
         newVelNorm += this->camera.getCameraRight()*20;
-    if(this->isPressed.value("a"))
+    if(this->isPressed.value("q"))
         newVelNorm -= this->camera.getCameraRight()*20;
 
     if(this->isPressed.value(" "))
         newVelNorm += this->camera.getCameraUp()*15;
     if(this->isPressed.value("ctrl"))
         newVelNorm -= this->camera.getCameraUp()*15;
-
-    if(this->isPressed.value("r"))
-        newRotNorm += QVector3D(1,0,0);
-    if(this->isPressed.value("f"))
-        newRotNorm -= QVector3D(1,0,0);
-    if(this->isPressed.value("q"))
-        newRotNorm += QVector3D(0,1,0);
-    if(this->isPressed.value("e"))
-        newRotNorm -= QVector3D(0,1,0);
 
     this->cameraCurrentVelocityNorm = newVelNorm;
     this->cameraCurrentRotationNorm = newRotNorm;

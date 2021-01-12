@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("0.1");
 #ifndef QT_NO_OPENGL
     MainWidget widget;
+    widget.setFixedSize(1920,1080);
+    widget.setWindowTitle("Moteur de jeux Minecraft");
     widget.show();
 #else
     QLabel note("OpenGL Support required");
