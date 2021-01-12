@@ -64,6 +64,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QOpenGLExtraFunctions>
+#include <QtWidgets>
 
 typedef QMap<QString, bool> InputStatus;
 
@@ -82,6 +83,7 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void keyPressEvent(QKeyEvent *ev) override;
     void keyReleaseEvent(QKeyEvent *ev) override;
@@ -93,6 +95,8 @@ protected:
 
     void initShaders();
     void initTextures();
+    QVector<QString> chargerTexture();
+    void changerTexture();
 
     void updateCameraVelNorm();
 private:
@@ -107,6 +111,10 @@ private:
     QOpenGLTexture *rockTexture;
     QOpenGLTexture *snowrockTexture;
 
+    int entier;
+    QLabel *label;
+    QVector<QString> tab;
+
     Camera camera;
     QVector3D cameraCurrentVelocityNorm;
     QVector3D cameraCurrentRotationNorm;
@@ -119,6 +127,8 @@ private:
 
     qreal angularSpeed;
     QQuaternion rotation;
+
+
 };
 
 #endif // MAINWIDGET_H
