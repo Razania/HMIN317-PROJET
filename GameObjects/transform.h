@@ -1,7 +1,7 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-class Transform;
+class GameObject;
 
 #include <QVector3D>
 #include <QMatrix4x4>

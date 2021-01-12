@@ -1,6 +1,8 @@
 #ifndef BOXCOLLIDER_H
 #define BOXCOLLIDER_H
-class BoxCollider;
+
+class Transform;
+
 #include <QVector3D>
 #include <GameObjects/transform.h>
 

@@ -1,11 +1,12 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+class Transform;
+class BoxCollider;
+
 #include <GameObjects/transform.h>
 #include <GameObjects/camera.h>
-class GameObject;
 #include <GameObjects/boxcollider.h>
-
 #include <Misc/geometryengine.h>
 #include <QOpenGLShaderProgram>
 
