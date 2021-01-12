@@ -6,16 +6,19 @@ TEMPLATE = app
 LIBS += -lOpenGL32
 
 SOURCES += \
+    GameObjects/directionallightobject.cpp \
+    GameObjects/pointlightobject.cpp \
+    GameObjects/skyboxgameobject.cpp \
+    GameObjects/spotlightobject.cpp \
     GameObjects/boxcollider.cpp \
     GameObjects/player.cpp \
     Main/main.cpp \
     Main/mainwidget.cpp \
-    GameObjects/astronomicalbodyobject.cpp \
     GameObjects/camera.cpp \
     GameObjects/gameobject.cpp \
-    GameObjects/meshobject.cpp \
     GameObjects/transform.cpp \
     GameObjects/chunkgameobject.cpp \
+    Misc/lightningengine.cpp \
     WorldGeneration/chunk.cpp \
     WorldGeneration/worldgrid.cpp \
     WorldGeneration/block.cpp \
@@ -56,21 +59,24 @@ SOURCES += \
     noise/src/module/turbulence.cpp \
     noise/src/module/voronoi.cpp \
     noise/src/noisegen.cpp \
-    noise/src/win32/dllmain.cpp \
+    noise/src/win32/dllmain.cpp
 
 
 HEADERS += \
+    GameObjects/directionallightobject.h \
+    GameObjects/pointlightobject.h \
+    GameObjects/skyboxgameobject.h \
+    GameObjects/spotlightobject.h \
     GameObjects/boxcollider.h \
     GameObjects/player.h \
     Main/mainwidget.h \
-    GameObjects/astronomicalbodyobject.h \
     GameObjects/camera.h \
     GameObjects/gameobject.h \
-    GameObjects/meshobject.h \
     GameObjects/transform.h \
     GameObjects/chunkgameobject.h \
     Misc/Generic.h \
     Misc/enum.h \
+    Misc/lightningengine.h \
     PerlinNoise/PerlinNoise.hpp \
     WorldGeneration/chunk.h \
     WorldGeneration/worldgrid.h \
@@ -123,7 +129,7 @@ HEADERS += \
     noise/src/noisegen.h \
     noise/src/vectortable.h \
     noise/src/win32/noise.rc \
-    noise/src/win32/resource.h \
+    noise/src/win32/resource.h
 
 RESOURCES += \
     Models/obj.qrc \
@@ -393,6 +399,3 @@ DISTFILES += \
     noise/src/Sources \
     noise/src/win32/libnoise.def \
     noise/src/win32/noise.aps
-
-
-

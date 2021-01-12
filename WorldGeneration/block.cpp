@@ -14,3 +14,8 @@ bool Block::canDrawFaceTowardBlock(Block* targetBlock)
 
     return true;
 }
+
+QVector3D Block::getBlockPos() const
+{
+    return blockPos;
+}

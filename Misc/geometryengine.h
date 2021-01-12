@@ -51,18 +51,12 @@
 #ifndef GEOMETRYENGINE_H
 #define GEOMETRYENGINE_H
 
+#include "Generic.h"
+
 #include <QOpenGLFunctions_3_1>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 #include <QOpenGLTexture>
-
-struct VertexData
-{
-    QVector3D position;
-    QVector3D normal;
-    QVector2D texCoord;
-    int texLayer;
-};
 
 class GeometryEngine : protected QOpenGLFunctions_3_1
 {
@@ -71,8 +65,8 @@ public:
     GeometryEngine();
     virtual ~GeometryEngine();
 
-    void initMeshObjGeometry(std::vector<VertexData>* vertices, std::vector<GLushort>* indices);
-    void drawMeshObjGeometry(QOpenGLShaderProgram *program);
+    void drawMeshObjGeometry_BasicVertexData(QOpenGLShaderProgram *program, std::vector<BasicVertexData>* vertices, std::vector<GLushort>* indices);
+    void drawMeshObjGeometry_SkyboxVertexData(QOpenGLShaderProgram *program, std::vector<SkyboxVertexData>* vertices, std::vector<GLushort>* indices);
 
 private:
 

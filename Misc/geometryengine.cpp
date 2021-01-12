@@ -61,8 +61,6 @@
 using namespace std;
 #include <Misc/BasicIO.h>
 
-
-
 //! [0]
 GeometryEngine::GeometryEngine()
     : indexBuf(QOpenGLBuffer::IndexBuffer)
@@ -80,20 +78,16 @@ GeometryEngine::~GeometryEngine()
     indexBuf.destroy();
 }
 //! [0]
-
-void GeometryEngine::initMeshObjGeometry(std::vector<VertexData>* vertices, std::vector<GLushort>* indices)
+void GeometryEngine::drawMeshObjGeometry_BasicVertexData(QOpenGLShaderProgram *program, std::vector<BasicVertexData>* vertices, std::vector<GLushort>* indices)
 {
     // Transfer vertex data to VBO 0
     arrayBuf.bind();
-    arrayBuf.allocate(&((*vertices)[0]), vertices->size() * sizeof(VertexData));
+    arrayBuf.allocate(&((*vertices)[0]), vertices->size() * sizeof(BasicVertexData));
 
     // Transfer index data to VBO 1
     indexBuf.bind();
     indexBuf.allocate(&((*indices)[0]), indices->size() * sizeof(GLushort));
-}
 
-void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
-{
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
@@ -104,7 +98,7 @@ void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
     // Tell OpenGL programmable pipeline how to locate vertex position data
     int vertexLocation = program->attributeLocation("a_position");
     program->enableAttributeArray(vertexLocation);
-    program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+    program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(BasicVertexData));
 
     // Offset for normaldata
     offset += sizeof(QVector3D);
@@ -112,8 +106,7 @@ void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
     // Tell OpenGL programmable pipeline how to locate vertex normal data
     int normalLocation = program->attributeLocation("a_normal");
     program->enableAttributeArray(normalLocation);
-    program->setAttributeBuffer(normalLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
-
+    program->setAttributeBuffer(normalLocation, GL_FLOAT, offset, 3, sizeof(BasicVertexData));
 
     // Offset for texture coordinate
     offset += sizeof(QVector3D);
@@ -121,16 +114,43 @@ void GeometryEngine::drawMeshObjGeometry(QOpenGLShaderProgram *program)
     // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
     int texcoordLocation = program->attributeLocation("a_texcoord");
     program->enableAttributeArray(texcoordLocation);
-    program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+    program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(BasicVertexData));
 
     // Offset for texture coordinate
     offset += sizeof(QVector2D);
 
     // Tell OpenGL programmable pipeline how to locate vertex texture coordinate data
-    int texLayerLocation = program->attributeLocation("a_texLayer");
+    int texLayerLocation = program->attributeLocation("a_texlayer");
     program->enableAttributeArray(texLayerLocation);
-    program->setAttributeBuffer(texLayerLocation, GL_INT, offset, 2, sizeof(VertexData));
+    glVertexAttribIPointer(texLayerLocation, 1, GL_UNSIGNED_INT, sizeof(BasicVertexData), (GLvoid*)(sizeof(QVector3D) + sizeof(QVector3D) + sizeof(QVector2D)));
+    //program->setAttributeBuffer(texLayerLocation, GL_UNSIGNED_INT, offset, 1, sizeof(VertexData));
+
     glValidateProgram(0);
     // Draw cube geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLES, indexBuf.size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+}
+
+void GeometryEngine::drawMeshObjGeometry_SkyboxVertexData(QOpenGLShaderProgram *program, std::vector<SkyboxVertexData>* vertices, std::vector<GLushort>* indices)
+{
+    // Transfer vertex data to VBO 0
+    arrayBuf.bind();
+    arrayBuf.allocate(&((*vertices)[0]), vertices->size() * sizeof(SkyboxVertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf.bind();
+    indexBuf.allocate(&((*indices)[0]), indices->size() * sizeof(GLushort));
+
+    // Tell OpenGL which VBOs to use
+    arrayBuf.bind();
+    indexBuf.bind();
+
+    // Tell OpenGL programmable pipeline how to locate vertex position data
+    int vertexLocation = program->attributeLocation("a_position");
+    program->enableAttributeArray(vertexLocation);
+    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3, sizeof(SkyboxVertexData));
+
+    glValidateProgram(0);
+    // Draw cube geometry using indices from VBO 1
+    glDrawElements(GL_TRIANGLE_STRIP, indexBuf.size()/sizeof(GLushort), GL_UNSIGNED_SHORT, 0);
+
 }

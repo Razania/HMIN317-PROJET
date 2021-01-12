@@ -53,30 +53,44 @@
 #include <QMouseEvent>
 
 #include <math.h>
+#include <iostream>
 #include <Misc/Generic.h>
-#include <GameObjects/meshobject.h>
-#include <GameObjects/astronomicalbodyobject.h>
+#include <GameObjects/skyboxgameobject.h>
 #include <GameObjects/chunkgameobject.h>
 #include <GameObjects/camera.h>
+#include <GameObjects/directionallightobject.h>
 #include <Misc/textureloader.h>
 #include <WorldGeneration/worldgrid.h>
 #include <WorldGeneration/chunk.h>
+#include <QTimer>
 
-vector<ChunkGameObject*> chunkObjects;
+std::vector<ChunkGameObject*> chunkObjects;
+
+int X = 0;
+int Y = 0;
 
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
-    heightmap(0),
-    grassTexture(0),
-    rockTexture(0),
-    snowrockTexture(0),
     angularSpeed(0)
 {
-    fps = 60;
+    fps = 144;
     cameraCurrentVelocityNorm = QVector3D(0,0,0);
     cameraCurrentRotationNorm = QVector3D(0,0,0);
-    camera = Camera(QVector3D(0,90.0f,0), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
+    camera = Camera(QVector3D(40,60,40), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
+
+    skybox = new SkyboxGameObject();
+
+    lightning = new LightningEngine();
+
+    tab = chargerTexture();
+    label = new QLabel(this);
+    entier = 0;
+    QPixmap image = QPixmap(tab[entier]);
+    QPixmap imageResize;
+    imageResize = image.scaled(100,100);
+
+    label->setPixmap(imageResize);
 }
 
 MainWidget::~MainWidget()
@@ -84,10 +98,6 @@ MainWidget::~MainWidget()
     // Make sure the context is current when deleting the texture
     // and the buffers.
     makeCurrent();
-    delete heightmap;
-    delete grassTexture;
-    delete snowrockTexture;
-    delete rockTexture;
     delete geometries;
     doneCurrent();
 }
@@ -96,6 +106,32 @@ void MainWidget::mousePressEvent(QMouseEvent *e)
 {
     // Save mouse press position
     mousePressPosition = QVector2D(e->localPos());
+}
+
+void MainWidget::mouseMoveEvent(QMouseEvent *e)
+{
+    QVector3D newRotNorm = QVector3D(0,0,0);
+    if(e->buttons() == Qt::RightButton){
+        if(e->localPos().x() > X){
+            newRotNorm -= QVector3D(0,1,0);
+            X = e->localPos().x();
+        }
+        else if(e->localPos().x() < X){
+            newRotNorm += QVector3D(0,1,0);
+            X = e->localPos().x();
+        }
+        if(e->localPos().y() > Y){
+            newRotNorm -= QVector3D(1,0,0);
+            Y = e->localPos().y();
+        }
+        else if(e->localPos().y() < Y){
+            newRotNorm += QVector3D(1,0,0);
+            Y = e->localPos().y();
+        }
+        QVector3D vec = QVector3D(-e->localPos().y()+540, -e->localPos().x(), 0);
+
+        this->camera.setCameraRotation(vec);
+    }
 }
 
 void MainWidget::mouseReleaseEvent(QMouseEvent *e)
@@ -115,6 +151,29 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
 
     // Increase angular speed
     angularSpeed += acc;
+}
+
+QVector<QString> MainWidget::chargerTexture(){
+    QVector<QString> tab;
+    tab.push_back(":/grassBottom.png");
+    tab.push_back(":/grassSide.png");
+    tab.push_back(":/grassTop.png");
+    tab.push_back(":/stoneBottom.png");
+    return tab;
+}
+
+void MainWidget::changerTexture(){
+    cout << entier << " " << tab.size() << endl;
+    if(entier < tab.size()-1)
+        entier++;
+    else
+        entier = 0;
+
+    QPixmap image = QPixmap(tab[entier]);
+    QPixmap imageResize;
+    imageResize = image.scaled(100,100);
+
+    label->setPixmap(imageResize);
 }
 
 void MainWidget::timerEvent(QTimerEvent *)
@@ -158,16 +217,23 @@ void MainWidget::initializeGL()
 
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
-glEnable(GL_TEXTURE_2D_ARRAY);
+
+    // Enable polygon mode
+    //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+
+    glEnable(GL_TEXTURE_2D_ARRAY);
+
     // Enable back face culling
     glEnable(GL_CULL_FACE);
+    //glDisable(GL_CULL_FACE);
 
+    //Init Model
     geometries = new GeometryEngine;
     this->sceneRoot = new GameObject();
 
     WorldGrid worldGrid = WorldGrid(1,QVector3D(16,256,16));
 
-    short viewRange = 4;
+    short viewRange = 8;
 
     for(short i = -(abs(viewRange)); i <= (abs(viewRange)); i++)
         for(short j = -(abs(viewRange)); j <= (abs(viewRange)); j++)
@@ -179,26 +245,37 @@ glEnable(GL_TEXTURE_2D_ARRAY);
             chunkObjects[chunkObjects.size() - 1]->transform->setParent(this->sceneRoot->transform);
         }
 
+    //Init Lightning
+    DirectionalLightObject baseLight = DirectionalLightObject();
+    DirectionalLight* lightAttributes = baseLight.getLight();
+
+    lightAttributes->direction = QVector3D(0.5,-1,0.5);
+    lightAttributes->ambient = QVector3D(0.2,0.2,0.2);
+    lightAttributes->diffuse = QVector3D(1,1,1);
+    lightAttributes->specular = QVector3D(0,0,0);
+
+    lightning->addDirectionalLight(baseLight);
+
     // Use QBasicTimer because its faster than QTimer
     timer.start(1000.0f/fps, this);
 }
 
 void MainWidget::initShaders()
 {
-    // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+    // Init main Shader Program
+    if (!mainProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+        close();
+    if (!mainProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+        close();
+    if (!mainProgram.link())
         close();
 
-    // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+    // Init skybox Shader Program
+    if (!skyboxProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/skybox_vshader.glsl"))
         close();
-
-    // Link shader pipeline
-    if (!program.link())
+    if (!skyboxProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/skybox_fshader.glsl"))
         close();
-
-    // Bind shader pipeline for use
-    if (!program.bind())
+    if (!skyboxProgram.link())
         close();
 }
 
@@ -206,10 +283,19 @@ void MainWidget::initTextures()
 {
     TextureLoader::initInstance(this);
 
-    rockTexture = new QOpenGLTexture(QImage(":/stoneSide.png").mirrored());
-    rockTexture->setMinificationFilter(QOpenGLTexture::Nearest);
-    rockTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    rockTexture->setWrapMode(QOpenGLTexture::Repeat);
+    if (!mainProgram.bind())
+        close();
+
+    TextureLoader::instance()->loadBlocksTextures();
+
+    mainProgram.release();
+
+    if (!skyboxProgram.bind())
+        close();
+
+    TextureLoader::instance()->loadSkyboxTextures();
+
+    skyboxProgram.release();
 }
 
 void MainWidget::resizeGL(int w, int h)
@@ -231,18 +317,14 @@ void MainWidget::paintGL()
 {
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    glEnable(GL_TEXTURE_2D_ARRAY);
-    // Enable back face culling
-    glEnable(GL_CULL_FACE);
-    glDisable(GL_CULL_FACE);
 
-    rockTexture->bind(GL_TEXTURE1);
-    program.setUniformValue("texture", GL_TEXTURE1);
+    //Update Lights
+    lightning->updateLightning(&mainProgram, camera.getCameraPosition());
 
+    skybox->Draw(&skyboxProgram, geometries, projection, this->camera);
 
     sceneRoot->Update();
-    sceneRoot->Draw(&program,geometries, projection,this->camera.getViewMatrix());
+    sceneRoot->Draw(&mainProgram,geometries, projection,this->camera);
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *ev)
@@ -253,11 +335,11 @@ void MainWidget::keyPressEvent(QKeyEvent *ev)
     if(ev->key() == Qt::Key_Control && isPressed.find("ctrl") == isPressed.end())
         isPressed.insert("ctrl",false);
 
-    if(ev->text() == "w" && !isPressed.value(ev->text()))
+    if(ev->text() == "z" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
     else if(ev->text() == "s" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "a" && !isPressed.value(ev->text()))
+    else if(ev->text() == "q" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
     else if(ev->text() == "d" && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
@@ -268,27 +350,22 @@ void MainWidget::keyPressEvent(QKeyEvent *ev)
         else if(this->camera.getCameraMode() == this->camera.CAMERA_MODE_STATIONARY)
             this->camera.setCameraToOrbitalMode();
         isPressed.find(ev->text()).value() = true;
-    }else if(ev->text() == " " && !isPressed.value(ev->text()))
+    }
+    else if(ev->text() == " " && !isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = true;
     else if(ev->key() == Qt::Key_Control && !isPressed.value("ctrl"))
             isPressed.find("ctrl").value() = true;
-    else if(ev->text() == "r" && !isPressed.value(ev->text()))
-            isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "f" && !isPressed.value(ev->text()))
-            isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "q" && !isPressed.value(ev->text()))
-            isPressed.find(ev->text()).value() = true;
-    else if(ev->text() == "e" && !isPressed.value(ev->text()))
+    else if(ev->text() == "t" && !isPressed.value(ev->text()))
             isPressed.find(ev->text()).value() = true;
 }
 
 void MainWidget::keyReleaseEvent(QKeyEvent *ev)
 {
-    if(ev->text() == "w" && isPressed.value(ev->text()))
+    if(ev->text() == "z" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
     else if(ev->text() == "s" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "a" && isPressed.value(ev->text()))
+    else if(ev->text() == "q" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
     else if(ev->text() == "d" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
@@ -298,43 +375,31 @@ void MainWidget::keyReleaseEvent(QKeyEvent *ev)
         isPressed.find(ev->text()).value() = false;
     else if(ev->key() == Qt::Key_Control && isPressed.value("ctrl"))
         isPressed.find("ctrl").value() = false;
-    else if(ev->text() == "r" && isPressed.value(ev->text()))
-        isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "f" && isPressed.value(ev->text()))
-        isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "q" && isPressed.value(ev->text()))
-        isPressed.find(ev->text()).value() = false;
-    else if(ev->text() == "e" && isPressed.value(ev->text()))
+    else if(ev->text() == "t" && isPressed.value(ev->text()))
         isPressed.find(ev->text()).value() = false;
 
+    if(ev->key() == Qt::Key_T){
+        changerTexture();
+    }
 }
 
 void MainWidget::updateCameraVelNorm(){
     QVector3D newVelNorm = QVector3D(0,0,0);
     QVector3D newRotNorm = QVector3D(0,0,0);
 
-    if(this->isPressed.value("w"))
+    if(this->isPressed.value("z"))
         newVelNorm += this->camera.getCameraDirection()*20;
     if(this->isPressed.value("s"))
         newVelNorm -= this->camera.getCameraDirection()*20;
     if(this->isPressed.value("d"))
         newVelNorm += this->camera.getCameraRight()*20;
-    if(this->isPressed.value("a"))
+    if(this->isPressed.value("q"))
         newVelNorm -= this->camera.getCameraRight()*20;
 
     if(this->isPressed.value(" "))
         newVelNorm += this->camera.getCameraUp()*15;
     if(this->isPressed.value("ctrl"))
         newVelNorm -= this->camera.getCameraUp()*15;
-
-    if(this->isPressed.value("r"))
-        newRotNorm += QVector3D(1,0,0);
-    if(this->isPressed.value("f"))
-        newRotNorm -= QVector3D(1,0,0);
-    if(this->isPressed.value("q"))
-        newRotNorm += QVector3D(0,1,0);
-    if(this->isPressed.value("e"))
-        newRotNorm -= QVector3D(0,1,0);
 
     this->cameraCurrentVelocityNorm = newVelNorm;
     this->cameraCurrentRotationNorm = newRotNorm;

@@ -5,7 +5,7 @@
 Chunk::Chunk(WorldGrid* parent, QPair<int, int> position, QVector3D chunkDimensions)
     : parent(parent), position(position), chunkDimensions(chunkDimensions)
 {
-    this->blocks.resize(chunkDimensions.x(),vector<vector<Block*>>(chunkDimensions.y(),vector<Block*>(chunkDimensions.z())));
+    this->blocks.resize(chunkDimensions.x(),std::vector<std::vector<Block*>>(chunkDimensions.y(),std::vector<Block*>(chunkDimensions.z())));
 
     for(int i = 0; i < chunkDimensions.x(); i++)
         for(int k = 0; k < chunkDimensions.z(); k++){
@@ -24,10 +24,14 @@ Chunk::Chunk(WorldGrid* parent, QPair<int, int> position, QVector3D chunkDimensi
             int baseLayer = (chunkDimensions.y() - 1) / 8;
 
             for(int j = 0; j < chunkDimensions.y(); j++){
-                if(j<=(maxLayer+baseLayer)){
-                    blocks[i][j][k] = new Block(BlockType::Stone);
+                if(j == (maxLayer+baseLayer)){
+                    blocks[i][j][k] = new Block(this, QVector3D(i,j,k), BlockType::Grass);
+                }else if(j < (maxLayer+baseLayer) && j > baseLayer){
+                    blocks[i][j][k] = new Block(this, QVector3D(i,j,k), BlockType::Dirt);
+                }else if(j <= (baseLayer)){
+                    blocks[i][j][k] = new Block(this, QVector3D(i,j,k), BlockType::Stone);
                 } else {
-                    blocks[i][j][k] = new Block(BlockType::Air);
+                    blocks[i][j][k] = new Block(this, QVector3D(i,j,k), BlockType::Air);
                 }
             }
         }

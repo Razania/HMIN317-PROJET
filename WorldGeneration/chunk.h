@@ -1,12 +1,10 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-#include <QVector3D>
-#include <vector>
-using namespace std;
-
 class Chunk;
 
+#include <QVector3D>
+#include <vector>
 #include <WorldGeneration/block.h>
 #include <WorldGeneration/worldgrid.h>
 
@@ -27,7 +25,7 @@ private:
     WorldGrid* parent;
     QPair<int, int> position;
     QVector3D chunkDimensions;
-    vector<vector<vector<Block*>>> blocks;
+    std::vector<std::vector<std::vector<Block*>>> blocks;
 };
 
 #endif // CHUNK_H

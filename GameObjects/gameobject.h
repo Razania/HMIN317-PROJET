@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+#include <GameObjects/transform.h>
+#include <GameObjects/camera.h>
 class GameObject;
 #include <GameObjects/boxcollider.h>
 
@@ -19,7 +21,7 @@ class GameObject
         virtual void Start();
         virtual void Update();
 
-        virtual void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, QMatrix4x4 view);
+        virtual void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera camera);
 
         int getId() const;
 

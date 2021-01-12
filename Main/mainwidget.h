@@ -52,6 +52,7 @@
 #define MAINWIDGET_H
 
 #include <Misc/geometryengine.h>
+#include <Misc/lightningengine.h>
 #include <GameObjects/camera.h>
 #include <GameObjects/gameobject.h>
 
@@ -64,6 +65,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 #include <QOpenGLExtraFunctions>
+#include <QtWidgets>
 
 typedef QMap<QString, bool> InputStatus;
 
@@ -82,6 +84,7 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
+    void mouseMoveEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void keyPressEvent(QKeyEvent *ev) override;
     void keyReleaseEvent(QKeyEvent *ev) override;
@@ -93,19 +96,27 @@ protected:
 
     void initShaders();
     void initTextures();
+    QVector<QString> chargerTexture();
+    void changerTexture();
 
     void updateCameraVelNorm();
 private:
+    GameObject* skybox;
     GameObject* sceneRoot;
+
+
     QBasicTimer timer;
     float fps;
-    QOpenGLShaderProgram program;
-    GeometryEngine *geometries;
 
-    QOpenGLTexture *heightmap;
-    QOpenGLTexture *grassTexture;
-    QOpenGLTexture *rockTexture;
-    QOpenGLTexture *snowrockTexture;
+    QOpenGLShaderProgram mainProgram;
+    QOpenGLShaderProgram skyboxProgram;
+
+    GeometryEngine *geometries;
+    LightningEngine *lightning;
+
+    int entier;
+    QLabel *label;
+    QVector<QString> tab;
 
     Camera camera;
     QVector3D cameraCurrentVelocityNorm;
@@ -119,6 +130,8 @@ private:
 
     qreal angularSpeed;
     QQuaternion rotation;
+
+
 };
 
 #endif // MAINWIDGET_H

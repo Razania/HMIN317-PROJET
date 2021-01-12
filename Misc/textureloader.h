@@ -24,25 +24,36 @@ public:
         }
     }
 
-    int getTextureIndex_Unifaced(BlockType blockType) const;
-    int getTextureIndex_Multifaced(BlockType blockType, FaceDirection faceDirection) const;
+    unsigned int getBlockFaceTexture(BlockType blockType, FaceDirection faceDirection) const;
+    GLuint getTextureArrayIndex();
+    MainWidget *getContext() const;
 
-    QOpenGLTexture *getTexturesList() const;
+    GLuint getSkyboxTextureIndex() const;
+
+    void loadSkyboxTextures();
+    void loadBlocksTextures();
 
 private:
     TextureLoader(MainWidget* context);
 
     MainWidget* context;
+
     inline static TextureLoader * _instance = nullptr;
-    QOpenGLTexture* texturesList;
-    std::vector<QImage*> listOfTextures;
-    QMap<QPair<BlockType, TextureFaceDirection>, int> texturesIndexList;
+
+    GLuint texturesListIndex;
+    QMap<QPair<BlockType, TextureFaceDirection>, unsigned int> texturesIndexList;
+
 
     TextureFaceDirection getTextureFaceDirection(FaceDirection faceDirection) const;
+
+    unsigned int getTextureIndex_Unifaced(BlockType blockType) const;
+    unsigned int getTextureIndex_Multifaced(BlockType blockType, FaceDirection faceDirection) const;
 
     QString getTextureName(BlockType blockType, TextureFaceDirection textureFaceDirection) const;
     QString getTextureName(BlockType blockType, FaceDirection faceDirection) const;
     QString getTextureName(BlockType blockType) const;
+
+    GLuint skyboxTextureIndex;
 };
 
 #endif // TEXTURELOADER_H

@@ -29,7 +29,6 @@ private:
     QVector3D chunkDimensions;
     int seed;
     QMap<QPair<int,int>,Chunk*> chunks;
-
 };
 
 #endif // WORLDGRID_H

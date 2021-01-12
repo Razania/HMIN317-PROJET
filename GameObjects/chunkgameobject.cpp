@@ -115,215 +115,217 @@ void ChunkGameObject::addBlockFace(Chunk* chunk, QVector3D blockPos, FaceDirecti
     unsigned int firstFaceVertexIndex = this->vertices.size();
     Block* block = chunk->getBlockAt(blockPos);
 
+    //qDebug("Block of Type %s for Face %s -> texture %d", block->getType()._to_string(), face._to_string(), TextureLoader::instance()->getBlockFaceTexture(block->getType(), face));
+
     switch(face._value){
         case FaceDirection::Bottom :
             // --- Bottom Face ---
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,-1,0)
                                       , QVector2D(0,0)
-                                      , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                     }); // Bottom Back Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,-1,0)
                                       , QVector2D(1,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                     }); // Bottom Back Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,-1,0)
                                       , QVector2D(1,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                     }); // Bottom Front Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,-1,0)
                                       , QVector2D(0,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                     }); // Bottom Front Left
             break;
         case FaceDirection::Top :
             // --- Top Face ---
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,1,0)
                                       , QVector2D(0,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                     }); // Top Back Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,1,0)
                                       , QVector2D(1,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                     }); // Top Back Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,1,0)
                                       , QVector2D(1,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Front Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,1,0)
                                       , QVector2D(0,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Front Right
             break;
         case FaceDirection::Left :
             // --- Left Face ---
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(-1,0,0)
                                       , QVector2D(0,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Front Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(-1,0,0)
                                       , QVector2D(1,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Back Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(-1,0,0)
                                       , QVector2D(1,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Back Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(-1,0,0)
                                       , QVector2D(0,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Front Left
             break;
         case FaceDirection::Right :
             // --- Right Face ---
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(1,0,0)
                                       , QVector2D(0,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Back  Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(1,0,0)
                                       , QVector2D(1,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Front  Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(1,0,0)
                                       , QVector2D(1,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Front  Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(1,0,0)
                                       , QVector2D(0,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Back Right
             break;
         case FaceDirection::Back :
             // --- Back Face ---
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,0,-1)
                                       , QVector2D(0,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Back Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,0,-1)
                                       , QVector2D(1,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Back Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,0,-1)
                                       , QVector2D(1,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Back Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z())
                                       , QVector3D(0,0,-1)
                                       , QVector2D(0,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                         , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Back Left
             break;
         case FaceDirection::Front :
             // --- Front Face ---
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,0,1)
                                       , QVector2D(0,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Front Right
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y() + voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,0,1)
                                       , QVector2D(1,0)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Top Front Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,0,1)
                                       , QVector2D(1,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Front Left
-            this->vertices.push_back(VertexData{
+            this->vertices.push_back(BasicVertexData{
                                         QVector3D( chunckBaseWorldPos.x() + blockPos.x() * voxelSize.x() + voxelSize.x()
                                                  , chunckBaseWorldPos.y() + blockPos.y() * voxelSize.y()
                                                  , chunckBaseWorldPos.z() + blockPos.z() * voxelSize.z() + voxelSize.z())
                                       , QVector3D(0,0,1)
                                       , QVector2D(0,1)
-                                         , TextureLoader::instance()->getTextureIndex_Multifaced(block->getType(),face)
+                                      , TextureLoader::instance()->getBlockFaceTexture(block->getType(),face)
                                      }); // Bottom Front Right
             break;
         default : return; //Unknown Face => Don't draw / trigger error
@@ -339,18 +341,22 @@ void ChunkGameObject::addBlockFace(Chunk* chunk, QVector3D blockPos, FaceDirecti
     this->indices.push_back(firstFaceVertexIndex);
 }
 
-void ChunkGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, QMatrix4x4 view) {
+void ChunkGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera camera) {
+    program->bind();
+
     program->setUniformValue("m_matrix", this->transform->worldMatrix());
-    program->setUniformValue("v_matrix", view);
+    program->setUniformValue("v_matrix", camera.getViewMatrix());
     program->setUniformValue("p_matrix", projection);
 
-    //TextureLoader::instance()->getTexturesList()->bind(0);
-    program->setUniformValue("textureList", GL_TEXTURE3);
+    TextureLoader::instance()->getContext()->glActiveTexture(GL_TEXTURE0);
+    TextureLoader::instance()->getContext()->glBindTexture(GL_TEXTURE_2D_ARRAY, TextureLoader::instance()->getTextureArrayIndex());
+    program->setUniformValue("textureList", 0);
 
-    geometries->initMeshObjGeometry(&vertices, &indices);
-    geometries->drawMeshObjGeometry(program);
+    geometries->drawMeshObjGeometry_BasicVertexData(program, &vertices, &indices);
 
-    GameObject::Draw(program, geometries, projection, view);
+    program->release();
+
+    GameObject::Draw(program, geometries, projection, camera);
 }
 
 

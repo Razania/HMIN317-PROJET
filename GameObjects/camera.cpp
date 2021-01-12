@@ -33,7 +33,14 @@ QVector3D Camera::getCameraRight(){
 
 QMatrix4x4 Camera::getViewMatrix(){
     QMatrix4x4 view = QMatrix4x4();
-    view.lookAt(this->getCameraPosition(), this->getCameraPosition() + this->getCameraDirection(), this->getCameraUp());
+    view.lookAt(this->getCameraPosition() + QVector3D(0,0,0), this->getCameraPosition() + this->getCameraDirection(), this->getCameraUp());
+
+    return view;
+}
+
+QMatrix4x4 Camera::getOriginViewMatrix(){
+    QMatrix4x4 view = QMatrix4x4();
+    view.lookAt(QVector3D(0,0,0), this->getCameraDirection(), this->getCameraUp());
 
     return view;
 }
