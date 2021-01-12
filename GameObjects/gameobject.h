@@ -1,9 +1,9 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
-class GameObject;
 
-#include <GameObjects/transform.h>
+class GameObject;
 #include <GameObjects/boxcollider.h>
+
 #include <Misc/geometryengine.h>
 #include <QOpenGLShaderProgram>
 
@@ -15,7 +15,7 @@ class GameObject
         GameObject();
         GameObject(Transform* transform);
         Transform* transform;
-        BoxCollider boxCollider;
+        BoxCollider* boxCollider;
         virtual void Start();
         virtual void Update();
 

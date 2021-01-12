@@ -7,6 +7,7 @@ LIBS += -lOpenGL32
 
 SOURCES += \
     GameObjects/boxcollider.cpp \
+    GameObjects/player.cpp \
     Main/main.cpp \
     Main/mainwidget.cpp \
     GameObjects/astronomicalbodyobject.cpp \
@@ -15,7 +16,6 @@ SOURCES += \
     GameObjects/meshobject.cpp \
     GameObjects/transform.cpp \
     GameObjects/chunkgameobject.cpp \
-    WorldGeneration/boxcollider.cpp \
     WorldGeneration/chunk.cpp \
     WorldGeneration/worldgrid.cpp \
     WorldGeneration/block.cpp \
@@ -61,6 +61,7 @@ SOURCES += \
 
 HEADERS += \
     GameObjects/boxcollider.h \
+    GameObjects/player.h \
     Main/mainwidget.h \
     GameObjects/astronomicalbodyobject.h \
     GameObjects/camera.h \
@@ -71,7 +72,6 @@ HEADERS += \
     Misc/Generic.h \
     Misc/enum.h \
     PerlinNoise/PerlinNoise.hpp \
-    WorldGeneration/boxcollider.h \
     WorldGeneration/chunk.h \
     WorldGeneration/worldgrid.h \
     WorldGeneration/block.h \

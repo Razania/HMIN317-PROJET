@@ -5,55 +5,86 @@ BoxCollider::BoxCollider()
 
 }
 
-BoxCollider::BoxCollider(int x, int y, int z, int h, int d, int w)
+BoxCollider::BoxCollider(Transform* t, QVector3D size)
 {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->w = w;
-    this->h = h;
-    this->d = d;
+    this->transform = t;
+    this->pos = transform->getLocalPosition();
+    this->size = size;
 }
 
-
-bool Collision(BoxCollider box1,BoxCollider box2)
+void BoxCollider::setTransform(Transform* t)
 {
-   if((box2.x >= box1.x + box1.w)      // trop à droite
-    || (box2.x + box2.w <= box1.x) // trop à gauche
-    || (box2.y >= box1.y + box1.h) // trop en bas
-    || (box2.y + box2.h <= box1.y)  // trop en haut
-        || (box2.z >= box1.z + box1.d)   // trop derrière
-    || (box2.z + box2.d <= box1.z))  // trop devant
+    this->transform = t;
+
+}
+
+QVector3D BoxCollider::getPos(){
+    return pos;
+}
+QVector3D BoxCollider::getSize(){
+    return size;
+}
+
+void BoxCollider::setSize(QVector3D size){
+    this->size = size;
+}
+
+void BoxCollider::setPos(QVector3D pos){
+    this->pos = pos;
+}
+
+bool BoxCollider::Collision(BoxCollider box1,BoxCollider box2)
+{
+
+   if((box2.pos[0] >= box1.pos[0] + box1.size[0])      // trop à droite
+    || (box2.pos[0] + box2.size[0] <= box1.pos[0]) // trop à gauche
+    || (box2.pos[1] >= box1.pos[1] + box1.size[1]) // trop en bas
+    || (box2.pos[1] + box2.size[1] <= box1.pos[1])  // trop en haut
+        || (box2.pos[2] >= box1.pos[2] + box1.size[2])   // trop derrière
+    || (box2.pos[2] + box2.size[2] <= box1.pos[2]))  // trop devant
           return false;
    else
           return true;
 }
+bool BoxCollider::CollisionFront(BoxCollider box1,BoxCollider box2)
+{
+   if((box2.pos[2] + box2.size[2] > box1.pos[2]))
+          return true;
+   else
+          return false;
+}
+bool BoxCollider::CollisionBack(BoxCollider box1,BoxCollider box2)
+{
+   if((box2.pos[2] < box1.pos[2] + box1.size[2]))
+          return true;
+   else
+          return false;
+}
+bool BoxCollider::CollisionRight(BoxCollider box1,BoxCollider box2)
+{
+   if((box2.pos[0] < box1.pos[0] + box1.size[0]))
+          return true;
+   else
+          return false;
+}
+bool BoxCollider::CollisionUp(BoxCollider box1,BoxCollider box2)
+{
+   if((box2.pos[1] + box2.size[1] > box1.pos[1]))
+          return true;
+   else
+          return false;
+}
+bool BoxCollider::CollisionDown(BoxCollider box1,BoxCollider box2)
+{
+   if(box2.pos[1] < box1.pos[1] + box1.size[1])
+          return true;
+   else
+          return false;
+}
 
-bool CollisionRight(BoxCollider box1,BoxCollider box2)
+bool BoxCollider::CollisionLeft(BoxCollider box1,BoxCollider box2)
 {
-   if((box2.x < box1.x + box1.w))
-          return true;
-   else
-          return false;
-}
-bool CollisionUp(BoxCollider box1,BoxCollider box2)
-{
-   if((box2.y + box2.h > box1.y))
-          return true;
-   else
-          return false;
-}
-bool CollisionDown(BoxCollider box1,BoxCollider box2)
-{
-   if(box2.y < box1.y + box1.h)
-          return true;
-   else
-          return false;
-}
-
-bool CollisionLeft(BoxCollider box1,BoxCollider box2)
-{
-   if((box2.x + box2.w > box1.x))      // trop à droite
+   if((box2.pos[0] + box2.size[0] > box1.pos[0]))      // trop à droite
           return true;
    else
           return false;
