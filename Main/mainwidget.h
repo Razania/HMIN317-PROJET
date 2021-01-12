@@ -52,6 +52,7 @@
 #define MAINWIDGET_H
 
 #include <Misc/geometryengine.h>
+#include <Misc/lightningengine.h>
 #include <GameObjects/camera.h>
 #include <GameObjects/gameobject.h>
 
@@ -107,6 +108,7 @@ private:
     QOpenGLShaderProgram skyboxProgram;
 
     GeometryEngine *geometries;
+    LightningEngine *lightning;
 
     Camera camera;
     QVector3D cameraCurrentVelocityNorm;

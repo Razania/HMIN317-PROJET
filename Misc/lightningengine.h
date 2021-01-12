@@ -15,22 +15,24 @@ public:
 
     void updateLightning(QOpenGLShaderProgram *program, QVector3D viewPosition);
 
-    void addDirectionalLight(DirectionalLightObject* light);
-    void addPointLight(PointLightObject* light);
-    void addSpotLight(SpotLightObject* light);
+    void addDirectionalLight(DirectionalLightObject light);
+    void addPointLight(PointLightObject light);
+    void addSpotLight(SpotLightObject light);
 
-    void removeDirectionalLight(DirectionalLightObject* light);
-    void removePointLight(PointLightObject* light);
-    void removeSpotLight(SpotLightObject* light);
+    void removeDirectionalLight(DirectionalLightObject light);
+    void removePointLight(PointLightObject light);
+    void removeSpotLight(SpotLightObject light);
 
 private:
-    std::map<int, DirectionalLightObject*> directionalLights;
-    std::map<int, PointLightObject*> pointLights;
-    std::map<int, SpotLightObject*> spotLights;
+    bool haveBeenUpdated;
 
-    void loadDirectionalLightToShader(QOpenGLShaderProgram *program, int lightIndex, DirectionalLight light);
-    void loadPointLightToShader(QOpenGLShaderProgram *program, int lightIndex, PointLight light);
-    void loadSpotLightToShader(QOpenGLShaderProgram *program, int lightIndex, SpotLight light);
+    QMap<int, DirectionalLightObject> directionalLights;
+    QMap<int, PointLightObject> pointLights;
+    QMap<int, SpotLightObject> spotLights;
+
+    void loadDirectionalLightToShader(QOpenGLShaderProgram *program, int lightIndex, DirectionalLight* light);
+    void loadPointLightToShader(QOpenGLShaderProgram *program, int lightIndex, PointLight* light);
+    void loadSpotLightToShader(QOpenGLShaderProgram *program, int lightIndex, SpotLight* light);
 };
 
 #endif // LIGHTNINGENGINE_H

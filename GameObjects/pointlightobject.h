@@ -8,10 +8,11 @@ class PointLightObject : public GameObject
 {
 public:
     PointLightObject();
-    PointLight getLight() const;
+
+    PointLight* getLight();
 
 private:
-    PointLight light;
+    PointLight* light;
 };
 
 #endif // POINTLIGHTOBJECT_H

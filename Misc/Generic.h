@@ -48,14 +48,30 @@ struct PointLight{
 struct SpotLight{
     QVector3D direction;
     QVector3D position;
-    float cutoff;
+
+    float constant;
+    float linear;
+    float quadratic;
+
+    float cutOff;
+    float outerCutOff;
 
     QVector3D ambient;
     QVector3D diffuse;
     QVector3D specular;
 };
 
+#ifndef M_PI
+    #define M_PI 3.1415926535
+#endif
 
+inline double to_degrees(double radians) {
+    return radians * (180.0 / M_PI);
+}
+
+inline double to_radians(double degrees) {
+    return (degrees * M_PI) / 180.0;
+}
 
 #include <type_traits>
 template < typename C, C beginVal, C endVal>

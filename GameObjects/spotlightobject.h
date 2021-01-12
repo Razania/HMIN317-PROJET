@@ -8,10 +8,11 @@ class SpotLightObject : public GameObject
 {
 public:
     SpotLightObject();
-    SpotLight getLight() const;
+
+    SpotLight* getLight();
 
 private:
-    SpotLight light;
+    SpotLight* light;
 };
 
 #endif // SPOTLIGHTOBJECT_H

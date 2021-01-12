@@ -8,8 +8,11 @@ class DirectionalLightObject : public GameObject
 {
 public:
     DirectionalLightObject();
+
+    DirectionalLight* getLight();
+
 private:
-    DirectionalLight light;
+    DirectionalLight* light;
 };
 
 #endif // DIRECTIONALLIGHTOBJECT_H
