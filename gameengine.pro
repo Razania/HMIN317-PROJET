@@ -18,7 +18,6 @@ SOURCES += \
     GameObjects/transform.cpp \
     GameObjects/chunkgameobject.cpp \
     Misc/lightningengine.cpp \
-    WorldGeneration/boxcollider.cpp \
     WorldGeneration/chunk.cpp \
     WorldGeneration/worldgrid.cpp \
     WorldGeneration/block.cpp \

@@ -187,56 +187,11 @@ void MainWidget::initializeGL()
     DirectionalLight* lightAttributes = baseLight.getLight();
 
     lightAttributes->direction = QVector3D(0.5,-1,0.5);
-    lightAttributes->ambient = QVector3D(0,0,0);
-    lightAttributes->diffuse = QVector3D(0,0,0);
+    lightAttributes->ambient = QVector3D(0.2,0.2,0.2);
+    lightAttributes->diffuse = QVector3D(1,1,1);
     lightAttributes->specular = QVector3D(0,0,0);
 
     lightning->addDirectionalLight(baseLight);
-
-    PointLightObject testPointLight = PointLightObject();
-    testPointLight.transform->setLocalPosition(QVector3D(0,60,0));
-    PointLight* testPointLightAttributes = testPointLight.getLight();
-
-    testPointLightAttributes->position = testPointLight.transform->getLocalPosition();
-    testPointLightAttributes->constant = 1;
-    testPointLightAttributes->linear = 0.009;
-    testPointLightAttributes->quadratic = 0.0032;
-    testPointLightAttributes->ambient = QVector3D(0,0,0.1);
-    testPointLightAttributes->diffuse = QVector3D(0,0,1);
-    testPointLightAttributes->specular = QVector3D(0,0,0);
-
-    lightning->addPointLight(testPointLight);
-
-    PointLightObject testPointLight2 = PointLightObject();
-    testPointLight2.transform->setLocalPosition(QVector3D(-40,58,-40));
-    PointLight* testPointLightAttributes2 = testPointLight2.getLight();
-
-    testPointLightAttributes2->position = testPointLight2.transform->getLocalPosition();
-    testPointLightAttributes2->constant = 1;
-    testPointLightAttributes2->linear = 0.09;
-    testPointLightAttributes2->quadratic = 0.032;
-    testPointLightAttributes2->ambient = QVector3D(0.1,0.1,0.1);
-    testPointLightAttributes2->diffuse = QVector3D(1,1,1);
-    testPointLightAttributes2->specular = QVector3D(0,0,0);
-
-    lightning->addPointLight(testPointLight2);
-
-    SpotLightObject testSpotLight = SpotLightObject();
-    testSpotLight.transform->setLocalPosition(QVector3D(40,60,40));
-    SpotLight* testSpotLightAttributes = testSpotLight.getLight();
-
-    testSpotLightAttributes->position = testSpotLight.transform->getLocalPosition();
-    testSpotLightAttributes->direction = QVector3D(0.8,-1,0.8);
-    testSpotLightAttributes->constant = 1;
-    testSpotLightAttributes->linear = 0.009;
-    testSpotLightAttributes->quadratic = 0.0032;
-    testSpotLightAttributes->cutOff = cos(to_radians(10));
-    testSpotLightAttributes->outerCutOff = cos(to_radians(15));
-    testSpotLightAttributes->ambient = QVector3D(0.1,0.1,0.1);
-    testSpotLightAttributes->diffuse = QVector3D(1,0,0);
-    testSpotLightAttributes->specular = QVector3D(0,0,0);
-
-    lightning->addSpotLight(testSpotLight);
 
     // Use QBasicTimer because its faster than QTimer
     timer.start(1000.0f/fps, this);
