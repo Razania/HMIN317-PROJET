@@ -3,6 +3,10 @@
 
 #include <QFileInfo>
 #include <regex>
+#include <Misc/enum.h>
+
+BETTER_ENUM(FaceDirection, char, Bottom, Top, Right, Left, Front, Back);
+BETTER_ENUM(BlockType, char, Air, Stone, Dirt, Grass);
 
 #include <type_traits>
 template < typename C, C beginVal, C endVal>

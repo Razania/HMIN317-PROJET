@@ -1,11 +1,11 @@
-#version 410 core
+#version 330 core
+
 uniform sampler2DArray textureList;
-uniform sampler2D texture;
 
 in vec2 texCoords;
 in vec4 v_normal;
 in vec4 FragPos;
-flat in int a_texLayer;
+flat in uint v_texlayer;
 
 //! [0]
 void main()
@@ -24,9 +24,7 @@ void main()
 
     vec3 result = ambient + diffuse;
 
-
-    gl_FragColor = vec4(result, 1) * texture2D(texture,texCoords);
-    //gl_FragColor = /*vec4(result, 1) **/ texture2DArray(textureList,vec3(texCoords,0));
+    gl_FragColor = vec4(result, 1) * texture2DArray(textureList, vec3(texCoords, v_texlayer));
 }
 //! [0]
 

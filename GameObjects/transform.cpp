@@ -9,11 +9,13 @@ Transform::Transform(GameObject* gameObject, Transform* parentNode, QVector3D lo
 {}
 
 void Transform::setParent(Transform* parentNode){
-    if(this->parentNode != nullptr){
+    if(this->parentNode != NULL){
         this->parentNode->removeChild(this);
     }
 
     this->parentNode = parentNode;
+    if(this->parentNode == NULL)
+        return;
     for(unsigned int i = 0 ;i<this->parentNode->getChilds().size(); i++)
         if(this->parentNode->getChilds()[i]->gameObject->getId() == this->gameObject->getId())
             return;
@@ -23,9 +25,10 @@ void Transform::setParent(Transform* parentNode){
 void Transform::addChild(Transform* child){
     this->childs.push_back(child);
 
-    if(child->getParent()->gameObject->getId() != this->gameObject->getId())
+    if(child->getParent() != NULL && child->getParent()->gameObject->getId() != this->gameObject->getId())
         child->setParent(this);
 }
+
 void Transform::removeChild(Transform* child){
     for(unsigned int i = 0 ;i<this->getChilds().size(); i++)
         if(this->getChilds()[i]->gameObject->getId() == child->gameObject->getId()){

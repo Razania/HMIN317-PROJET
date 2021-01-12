@@ -1,21 +1,24 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include <Misc/Generic.h>
-#include <Misc/enum.h>
+class Block;
 
-BETTER_ENUM(FaceDirection, char, Bottom, Top, Right, Left, Front, Back);
-BETTER_ENUM(BlockType, char, Air, Stone, Dirt);
+#include <Misc/Generic.h>
+#include <WorldGeneration/chunk.h>
 
 class Block
 {
 public:
-    Block(BlockType type) : type(type){}
+    Block(Chunk *parentChunk, QVector3D blockPos, BlockType type) : parentChunk(parentChunk), blockPos(blockPos),type(type){}
     BlockType getType() const;
 
     bool canDrawFaceTowardBlock(Block* targetBlock);
 
+    QVector3D getBlockPos() const;
+
 private:
+    Chunk *parentChunk;
+    QVector3D blockPos;
     BlockType type;
 };
 
