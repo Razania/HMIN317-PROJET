@@ -1,6 +1,8 @@
 #version 330 core
 #extension GL_EXT_texture_array : enable
 
+out vec4 fragColor;
+
 uniform sampler2DArray textureList;
 
 in vec2 texCoords;
@@ -149,7 +151,7 @@ void main()
         result += CalcSpotLight(spotLights[i], norm, vec3(FragPos), viewDir);
     }
 
-    gl_FragColor = vec4(result, 1) * texture2DArray(textureList, vec3(texCoords, v_texlayer));
+    fragColor = vec4(result, 1) * texture2DArray(textureList, vec3(texCoords, v_texlayer));
 }
 //! [0]
 
