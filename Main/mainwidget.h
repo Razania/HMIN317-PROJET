@@ -84,6 +84,7 @@ public:
     QOpenGLShaderProgram* getProgram();
 
 protected:
+    void paintEvent() ;
     void mousePressEvent(QMouseEvent *e) override;
     void mouseMoveEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
@@ -99,12 +100,13 @@ protected:
     void initTextures();
     QVector<QString> chargerTexture();
     void changerTexture();
-
     void updateCameraVelNorm();
+
 private:
     GameObject* skybox;
     GameObject* sceneRoot;
-
+    QTime m_time;
+    int m_frameCount;
     QBasicTimer timer;
     float fps;
 
@@ -116,6 +118,7 @@ private:
 
     int entier;
     QLabel *label;
+    QLabel *labelFps;
     QVector<QString> tab;
 
     Player player;
