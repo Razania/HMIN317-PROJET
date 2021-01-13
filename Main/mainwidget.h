@@ -99,6 +99,7 @@ protected:
     void initTextures();
     QVector<QString> chargerTexture();
     void changerTexture();
+    void changerMode();
 
     void updateCameraVelNorm();
 private:

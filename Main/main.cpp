@@ -68,7 +68,8 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("0.1");
 #ifndef QT_NO_OPENGL
     MainWidget widget;
-    widget.setFixedSize(800,450);
+    widget.setMinimumSize(800,450);
+    //widget.setFixedSize(800,450);
     widget.setWindowTitle("Moteur de jeux Minecraft");
     widget.show();
 #else
