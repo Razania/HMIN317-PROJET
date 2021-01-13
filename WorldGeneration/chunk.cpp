@@ -20,6 +20,8 @@ Chunk::Chunk(WorldGrid* parent, QPair<int, int> position, QVector3D chunkDimensi
             f = (f+1)/2;
 
             //qDebug() << f << endl;
+//            int maxLayer = 5;
+//            int baseLayer = 55;
             int maxLayer = (f * (chunkDimensions.y() - 1) / 20) + ((chunkDimensions.y() - 1) / 20);
             int baseLayer = (chunkDimensions.y() - 1) / 8;
 

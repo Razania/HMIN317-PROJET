@@ -12,7 +12,7 @@ RigidBody::RigidBody(Transform* body) : body(body)
     this->setGravity(9.71);
     this->setMass(10);
     this->setMaxSpeed(20);
-    this->setDampeningRation(0.05f);
+    this->setDampeningRation(0.15f);
     this->setMinimalElapsedTime(0.05f);
 }
 
@@ -58,7 +58,7 @@ void RigidBody::updateBody()
 void RigidBody::applyGravity()
 {
     //MAJ Gravité
-    if(this->body->getLocalPosition().y() > 0){
+    if(this->body->getLocalPosition().y() > 60.0f){
         QVector3D scaledGravity = QVector3D(0, -(this->getGravity() * this->getMass()), 0);
         this->addForce(scaledGravity);
     }else{

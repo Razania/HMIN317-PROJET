@@ -79,7 +79,7 @@ class MainWidget : public QOpenGLWidget, public QOpenGLExtraFunctions
     Q_OBJECT
 
 public:
-    static constexpr float CAMERA_MOVEMENT_SPEED = 1000.0f;
+    static constexpr float CAMERA_MOVEMENT_SPEED = 100.0f;
     explicit MainWidget(QWidget *parent = 0);
     ~MainWidget();
 
@@ -102,10 +102,7 @@ protected:
     void initTextures();
     QVector<QString> chargerTexture();
     void changerTexture();
-<<<<<<< HEAD
     void changerMode();
-=======
->>>>>>> Alex
     void updateCameraVelNorm();
 
 private:

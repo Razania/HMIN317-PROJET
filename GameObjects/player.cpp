@@ -19,7 +19,7 @@ void Player::Update(){
     camera->setCameraPosition(this->transform->getWorldPosition() + QVector3D(0,1.75,0));
     this->transform->setLocalRotation(QQuaternion::fromEulerAngles(0,this->getCamera()->getCameraRotation().y(),0));
 
-    //rigidbody->applyGravity();
+    rigidbody->applyGravity();
     rigidbody->updateBody();
 
 //    std::vector<QPair<int, int>> chunksToCollidePos = worldGrid->getChunksAtWorldPosForSize(this->transform->getWorldPosition(), QVector2D(boxCollider->getSize().x(), boxCollider->getSize().z()));

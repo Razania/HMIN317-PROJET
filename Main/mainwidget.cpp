@@ -94,7 +94,7 @@ MainWidget::MainWidget(QWidget *parent) :
     QPixmap imageResize;
     imageResize = image.scaled(100,100);
     m_frameCount = 0;
-    label->setPixmap(imageResize);
+    //label->setPixmap(imageResize);
     labelFps->setPixmap(imageResize);
 }
 
@@ -109,13 +109,15 @@ MainWidget::~MainWidget()
 
 void MainWidget::paintEvent() {
     if (m_frameCount == 0) {
-         m_time.start();
+        m_time.start();
+
+        m_frameCount++;
     } else {
+        m_frameCount++;
        // printf("FPS is %f ms\n", m_time.elapsed() / (m_frameCount));
-        labelFps->setText(QString::number((int)(m_time.elapsed() / (m_frameCount))) + " FPS");
-        labelFps->move(0,80);
+        labelFps->setText(QString::number((int)(((float) m_frameCount) / (((float) m_time.elapsed()) / 1000.0f))) + " FPS");
+
     }
-    m_frameCount++;
 
 }
 
@@ -294,6 +296,55 @@ void MainWidget::initializeGL()
     lightAttributes->specular = QVector3D(0,0,0);
 
     lightning->addDirectionalLight(baseLight);
+
+//    PointLightObject pointLight1 = PointLightObject();
+//    PointLight* pointLight1Attributes = pointLight1.getLight();
+
+//    pointLight1Attributes->position = QVector3D(100,63,100);
+
+//    pointLight1Attributes->constant = 1.0;
+//    pointLight1Attributes->linear = 0.07;
+//    pointLight1Attributes->quadratic = 0.017;
+
+//    pointLight1Attributes->ambient = QVector3D(0.2,0.2,0.2);
+//    pointLight1Attributes->diffuse = QVector3D(1,0,0);
+//    pointLight1Attributes->specular = QVector3D(0,0,0);
+
+//    lightning->addPointLight(pointLight1);
+
+//    PointLightObject pointLight2 = PointLightObject();
+//    PointLight* pointLight2Attributes = pointLight2.getLight();
+
+//    pointLight2Attributes->position = QVector3D(0,65,0);
+
+//    pointLight2Attributes->constant = 1.0;
+//    pointLight2Attributes->linear = 0.014;
+//    pointLight2Attributes->quadratic = 0.0002;
+
+//    pointLight2Attributes->ambient = QVector3D(0.2,0.2,0.2);
+//    pointLight2Attributes->diffuse = QVector3D(1,0.5,0);
+//    pointLight2Attributes->specular = QVector3D(0,0,0);
+
+//    lightning->addPointLight(pointLight2);
+
+//    SpotLightObject spotLight = SpotLightObject();
+//    SpotLight* spotLightAttributes = spotLight.getLight();
+
+//    spotLightAttributes->direction = QVector3D(-0.75,-1,0.75);
+//    spotLightAttributes->position = QVector3D(-100,65,-100);
+
+//    spotLightAttributes->constant = 1.0;
+//    spotLightAttributes->linear = 0.07;
+//    spotLightAttributes->quadratic = 0.017;
+
+//    spotLightAttributes->cutOff = cos(to_radians(25));
+//    spotLightAttributes->outerCutOff = cos(to_radians(35));
+
+//    spotLightAttributes->ambient = QVector3D(0.2,0.2,0.2);
+//    spotLightAttributes->diffuse = QVector3D(1,1,1);
+//    spotLightAttributes->specular = QVector3D(0,0,0);
+
+//    lightning->addSpotLight(spotLight);
 
     this->sceneRoot->Start();
 
