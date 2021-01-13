@@ -20,15 +20,22 @@ void RigidBody::updateBody()
 {
     float elapsedTime = ((float) timer.elapsed()) / 1000.0f; //Get Elapsed Time
 
+    if(elapsedTime < 0.03f)
+        return;
+
+    //qDebug("velocity(%f, %f, %f)", this->getVelocity().x(), this->getVelocity().y(), this->getVelocity().z());
     //qDebug("force(%f, %f, %f) to apply in %f seconds", this->getForce().x(), this->getForce().y(), this->getForce().z(), elapsedTime);
 
     //MAJ vélocité
-    QVector3D scaledForces = (this->getForce() / this->getMass() * elapsedTime);
+    QVector3D scaledForces = (this->getForce() / this->getMass()) * elapsedTime;
         //Dampening
-    QVector3D dampenedVelocity = this->getVelocity() / (1 + (log10(1 + this->getDampeningRation())));
-    this->setVelocity(QVector3D(dampenedVelocity.x(), this->getVelocity().y(), dampenedVelocity.z()));
+    QVector3D dampenedVelocity = this->getVelocity() / ((1 + (log10(1 + this->getDampeningRation()))) * elapsedTime);
+    this->setVelocity(dampenedVelocity);
+    //qDebug("velocity(%f, %f, %f)", this->getVelocity().x(), this->getVelocity().y(), this->getVelocity().z());
 
     this->addVelocity(scaledForces);
+    //qDebug("velocity(%f, %f, %f)", this->getVelocity().x(), this->getVelocity().y(), this->getVelocity().z());
+
     this->setForce(QVector3D(0,0,0));
 
     //MAJ position body
@@ -46,6 +53,7 @@ void RigidBody::updateBody()
         //TimeScale Movement
     bodyMovement *= elapsedTime;
         //Apply Movement
+    lastMovement = bodyMovement;
     //qDebug("oldPosition(%f, %f, %f)", body->getLocalPosition().x(), body->getLocalPosition().y(), body->getLocalPosition().z());
     body->setLocalPosition(body->getLocalPosition() + bodyMovement);
     //qDebug("newPosition(%f, %f, %f)\n", body->getLocalPosition().x(), body->getLocalPosition().y(), body->getLocalPosition().z());
@@ -143,4 +151,15 @@ float RigidBody::getMinimalElapsedTime() const
 void RigidBody::setMinimalElapsedTime(float value)
 {
     minimalElapsedTime = value;
+}
+
+void RigidBody::initTimer()
+{
+    timer.start();
+}
+
+void RigidBody::revertLastMovement(QVector3D revertAxis)
+{
+    body->setLocalPosition(body->getLocalPosition() - lastMovement);
+
 }

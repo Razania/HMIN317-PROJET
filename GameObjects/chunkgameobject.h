@@ -17,6 +17,11 @@ public:
     ChunkGameObject(Chunk* chunk);
     void generateSurface(Chunk* chunk);
     void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera* camera) override;
+    void Start() override;
+    void Update() override;
+
+    std::vector<BoxCollider*> getActiveBlocksColliders() const;
+
 private:
     void addBlockFace(Chunk* chunk, QVector3D blockPos, FaceDirection face);
 
@@ -25,7 +30,12 @@ private:
     QOpenGLTexture *texture;
     int textureIndex;
 
-    std::vector<BoxCollider> activeBlocksColliders;
-    std::vector<BoxCollider> reserveBlocksColliders;
+    std::vector<BoxCollider*> activeBlocksColliders;
+    std::vector<BoxCollider*> reserveBlocksColliders;
+
+    BoxCollider* fetchNewActiveBlockCollider();
+    void stashCurrentActiveBlocksColliders();
+
+    // GameObject interface
 };
 #endif // CHUNKGAMEOBJECT_H

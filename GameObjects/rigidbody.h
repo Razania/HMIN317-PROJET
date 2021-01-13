@@ -39,6 +39,10 @@ public:
     float getMinimalElapsedTime() const;
     void setMinimalElapsedTime(float value);
 
+    void initTimer();
+
+    void revertLastMovement(QVector3D revertAxis);
+
 private:
     QVector3D velocity;
     QVector3D force;
@@ -51,6 +55,8 @@ private:
     float minimalElapsedTime;
 
     QElapsedTimer timer;
+
+    QVector3D lastMovement;
 
     Transform* body;
 };

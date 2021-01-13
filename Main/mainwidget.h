@@ -53,8 +53,10 @@
 
 #include <Misc/geometryengine.h>
 #include <Misc/lightningengine.h>
+#include <WorldGeneration/worldgrid.h>
 #include <GameObjects/camera.h>
 #include <GameObjects/gameobject.h>
+#include <GameObjects/chunkgameobject.h>
 #include <GameObjects/player.h>
 
 #include <QOpenGLWidget>
@@ -131,8 +133,9 @@ private:
 
     qreal angularSpeed;
     QQuaternion rotation;
+    WorldGrid worldGrid;
 
-
+    QMap<QPair<int, int>, ChunkGameObject*> chunkObjects;
 };
 
 #endif // MAINWIDGET_H

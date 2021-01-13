@@ -56,16 +56,12 @@
 #include <iostream>
 #include <Misc/Generic.h>
 #include <GameObjects/skyboxgameobject.h>
-#include <GameObjects/chunkgameobject.h>
 #include <GameObjects/camera.h>
 #include <GameObjects/directionallightobject.h>
 #include <GameObjects/rigidbody.h>
 #include <Misc/textureloader.h>
-#include <WorldGeneration/worldgrid.h>
 #include <WorldGeneration/chunk.h>
 #include <QTimer>
-
-std::vector<ChunkGameObject*> chunkObjects;
 
 int X = 0;
 int Y = 0;
@@ -73,7 +69,8 @@ int Y = 0;
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
-    angularSpeed(0)
+    angularSpeed(0),
+    worldGrid(WorldGrid(1,QVector3D(16,256,16)))
 {
     fps = 144;
     playerCurrentVelocityNorm = QVector3D(0,0,0);
@@ -129,7 +126,6 @@ void MainWidget::mouseMoveEvent(QMouseEvent *e)
             Y = e->localPos().y();
         }
         QVector3D vec = QVector3D(-e->localPos().y()+(this->height()/2), -e->localPos().x()-(this->width()/2), 0);
-        qDebug("%f %f %f", vec.x(), vec.y(), vec.z());
         player.getCamera()->setCameraRotation(vec);
     }
 }
@@ -232,10 +228,13 @@ void MainWidget::initializeGL()
     this->sceneRoot = new GameObject();
 
     player.transform->setParent(this->sceneRoot->transform);
+    player.transform->setLocalPosition(QVector3D(0,65,0));
 
-    WorldGrid worldGrid = WorldGrid(1,QVector3D(16,256,16));
 
-    short viewRange = 8;
+    player.setWorldGrid(&worldGrid);
+    player.setChunkObjects(&chunkObjects);
+
+    short viewRange = 16;
 
     for(short i = -(abs(viewRange)); i <= (abs(viewRange)); i++)
         for(short j = -(abs(viewRange)); j <= (abs(viewRange)); j++)
@@ -243,9 +242,14 @@ void MainWidget::initializeGL()
 
     for(short i = -(abs(viewRange)); i <= (abs(viewRange)); i++)
         for(short j = -(abs(viewRange)); j <= (abs(viewRange)); j++){
-            chunkObjects.push_back(new ChunkGameObject(worldGrid.getChunk(QPair<int, int>(i, j))));
-            chunkObjects[chunkObjects.size() - 1]->transform->setParent(this->sceneRoot->transform);
+            chunkObjects.insert(QPair<int, int>(i, j), new ChunkGameObject(worldGrid.getChunk(QPair<int, int>(i, j))));
+            chunkObjects[QPair<int, int>(i, j)]->transform->setParent(this->sceneRoot->transform);
         }
+
+//    std::vector<QPair<int, int>> chunksPos = worldGrid.getChunksAtWorldPosForSize(QVector3D(0,0,0), QVector2D(1,1));
+//    qDebug("Nb Chunks trouvés = %lld", chunksPos.size());
+//    for(QPair<int, int> chunkPos : chunksPos)
+//        qDebug("%d %d", chunkPos.first, chunkPos.second);
 
     //Init Lightning
     DirectionalLightObject baseLight = DirectionalLightObject();
@@ -257,6 +261,8 @@ void MainWidget::initializeGL()
     lightAttributes->specular = QVector3D(0,0,0);
 
     lightning->addDirectionalLight(baseLight);
+
+    this->sceneRoot->Start();
 
     // Use QBasicTimer because its faster than QTimer
     timer.start(1000.0f/fps, this);

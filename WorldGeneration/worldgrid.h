@@ -18,12 +18,15 @@ public:
 
     Chunk* getChunk(QPair<int, int> chunkPos);
     Chunk* getChunkAtWorldPos(QVector3D worldPos);
+    std::vector<QPair<int, int>> getChunksAtWorldPosForSize(QVector3D worldPos, QVector2D size);
 
     QPair<int, int> worldPosToChunkPos(QVector3D worldPos) const;
 
     void generateChunk(QPair<int, int> chunkPos);
 
     int getSeed() const;
+
+    QVector3D getChunkDimensions() const;
 
 private:
     QVector3D chunkDimensions;

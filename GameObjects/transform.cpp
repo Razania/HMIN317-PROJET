@@ -2,11 +2,23 @@
 #include <iostream>
 #include <QDebug>
 Transform::Transform(GameObject* gameObject,QVector3D localPosition, QQuaternion localRotation, QVector3D localScale)
-: gameObject(gameObject), parentNode(nullptr), localPosition(localPosition), localRotation(localRotation), localScale(localScale)
-{}
+: gameObject(gameObject), localPosition(localPosition), localRotation(localRotation), localScale(localScale)
+{
+    if(this->gameObject == NULL)
+        this->gameObject = new GameObject(this);
+
+    childs.resize(0);
+    parentNode = NULL;
+}
 Transform::Transform(GameObject* gameObject, Transform* parentNode, QVector3D localPosition, QQuaternion localRotation, QVector3D localScale)
-    : gameObject(gameObject), parentNode(parentNode), localPosition(localPosition), localRotation(localRotation), localScale(localScale)
-{}
+    : gameObject(gameObject), localPosition(localPosition), localRotation(localRotation), localScale(localScale)
+{
+    if(this->gameObject == NULL)
+        this->gameObject = new GameObject(this);
+
+    childs.resize(0);
+    setParent(parentNode);
+}
 
 void Transform::setParent(Transform* parentNode){
     if(this->parentNode != NULL){

@@ -22,7 +22,10 @@ int GameObject::getId() const
     return id;
 }
 
-void GameObject::Start(){}
+void GameObject::Start(){
+    for(unsigned int i = 0 ;i<this->transform->getChilds().size(); i++)
+        this->transform->getChilds()[i]->gameObject->Start();
+}
 
 void GameObject::Update(){
     for(unsigned int i = 0 ;i<this->transform->getChilds().size(); i++)
