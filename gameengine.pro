@@ -8,6 +8,7 @@ LIBS += -lOpenGL32
 SOURCES += \
     GameObjects/directionallightobject.cpp \
     GameObjects/pointlightobject.cpp \
+    GameObjects/rigidbody.cpp \
     GameObjects/skyboxgameobject.cpp \
     GameObjects/spotlightobject.cpp \
     GameObjects/boxcollider.cpp \
@@ -65,6 +66,7 @@ SOURCES += \
 HEADERS += \
     GameObjects/directionallightobject.h \
     GameObjects/pointlightobject.h \
+    GameObjects/rigidbody.h \
     GameObjects/skyboxgameobject.h \
     GameObjects/spotlightobject.h \
     GameObjects/boxcollider.h \

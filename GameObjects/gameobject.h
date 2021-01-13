@@ -6,7 +6,6 @@ class BoxCollider;
 
 #include <GameObjects/transform.h>
 #include <GameObjects/camera.h>
-#include <GameObjects/boxcollider.h>
 #include <Misc/geometryengine.h>
 #include <QOpenGLShaderProgram>
 
@@ -18,11 +17,10 @@ class GameObject
         GameObject();
         GameObject(Transform* transform);
         Transform* transform;
-        BoxCollider* boxCollider;
         virtual void Start();
         virtual void Update();
 
-        virtual void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera camera);
+        virtual void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera* camera);
 
         int getId() const;
 

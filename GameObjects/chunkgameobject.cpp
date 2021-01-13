@@ -341,11 +341,11 @@ void ChunkGameObject::addBlockFace(Chunk* chunk, QVector3D blockPos, FaceDirecti
     this->indices.push_back(firstFaceVertexIndex);
 }
 
-void ChunkGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera camera) {
+void ChunkGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera* camera) {
     program->bind();
 
     program->setUniformValue("m_matrix", this->transform->worldMatrix());
-    program->setUniformValue("v_matrix", camera.getViewMatrix());
+    program->setUniformValue("v_matrix", camera->getViewMatrix());
     program->setUniformValue("p_matrix", projection);
 
     TextureLoader::instance()->getContext()->glActiveTexture(GL_TEXTURE0);

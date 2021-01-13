@@ -53,7 +53,7 @@ SkyboxGameObject::SkyboxGameObject()
     };
 }
 
-void SkyboxGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera camera)
+void SkyboxGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera* camera)
 {
     program->bind();
 
@@ -65,7 +65,7 @@ void SkyboxGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geome
     glCullFace(GL_FRONT);
     glDepthFunc(GL_LEQUAL);
 
-    program->setUniformValue("v_matrix", camera.getOriginViewMatrix());
+    program->setUniformValue("v_matrix", camera->getOriginViewMatrix());
     program->setUniformValue("p_matrix", projection);
     TextureLoader::instance()->getContext()->glActiveTexture(GL_TEXTURE1);
     TextureLoader::instance()->getContext()->glBindTexture(GL_TEXTURE_CUBE_MAP, TextureLoader::instance()->getSkyboxTextureIndex());

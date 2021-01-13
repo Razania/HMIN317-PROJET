@@ -8,7 +8,7 @@ class SkyboxGameObject : public GameObject
 public:
     SkyboxGameObject();
 
-    void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera camera);
+    void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera* camera);
 
 private:
     std::vector<SkyboxVertexData> vertices;

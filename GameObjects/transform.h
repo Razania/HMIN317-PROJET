@@ -30,6 +30,8 @@ class Transform
         void setLocalRotation(QQuaternion newLocalRotation){ this->localRotation = newLocalRotation; }
         void setLocalScale(QVector3D newLocalScale){ this->localScale = newLocalScale; }
 
+        QVector3D getWorldPosition();
+
         QMatrix4x4 worldMatrix();
 
         GameObject* gameObject;

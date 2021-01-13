@@ -55,6 +55,7 @@
 #include <Misc/lightningengine.h>
 #include <GameObjects/camera.h>
 #include <GameObjects/gameobject.h>
+#include <GameObjects/player.h>
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_1>
@@ -76,7 +77,7 @@ class MainWidget : public QOpenGLWidget, public QOpenGLExtraFunctions
     Q_OBJECT
 
 public:
-    static constexpr float CAMERA_MOVEMENT_SPEED = 0.01f;
+    static constexpr float CAMERA_MOVEMENT_SPEED = 100.0f;
     explicit MainWidget(QWidget *parent = 0);
     ~MainWidget();
 
@@ -104,7 +105,6 @@ private:
     GameObject* skybox;
     GameObject* sceneRoot;
 
-
     QBasicTimer timer;
     float fps;
 
@@ -118,9 +118,10 @@ private:
     QLabel *label;
     QVector<QString> tab;
 
-    Camera camera;
-    QVector3D cameraCurrentVelocityNorm;
+    Player player;
+    QVector3D playerCurrentVelocityNorm;
     QVector3D cameraCurrentRotationNorm;
+
     InputStatus isPressed;
 
     QMatrix4x4 projection;

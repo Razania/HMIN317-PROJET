@@ -59,6 +59,7 @@
 #include <GameObjects/chunkgameobject.h>
 #include <GameObjects/camera.h>
 #include <GameObjects/directionallightobject.h>
+#include <GameObjects/rigidbody.h>
 #include <Misc/textureloader.h>
 #include <WorldGeneration/worldgrid.h>
 #include <WorldGeneration/chunk.h>
@@ -75,9 +76,8 @@ MainWidget::MainWidget(QWidget *parent) :
     angularSpeed(0)
 {
     fps = 144;
-    cameraCurrentVelocityNorm = QVector3D(0,0,0);
+    playerCurrentVelocityNorm = QVector3D(0,0,0);
     cameraCurrentRotationNorm = QVector3D(0,0,0);
-    camera = Camera(QVector3D(40,60,40), QVector3D(0,0,-1), QVector3D(0,0,0),QVector3D(0,1,0));
 
     skybox = new SkyboxGameObject();
 
@@ -130,7 +130,7 @@ void MainWidget::mouseMoveEvent(QMouseEvent *e)
         }
         QVector3D vec = QVector3D(-e->localPos().y()+540, -e->localPos().x(), 0);
 
-        this->camera.setCameraRotation(vec);
+        player.getCamera()->setCameraRotation(vec);
     }
 }
 
@@ -179,18 +179,17 @@ void MainWidget::changerTexture(){
 void MainWidget::timerEvent(QTimerEvent *)
 {
     //Mouvement Camera
-    if(camera.getCameraMode() == camera.CAMERA_MODE_ORBITAL){
+    if(player.getCamera()->getCameraMode() == player.getCamera()->CAMERA_MODE_ORBITAL){
         //qDebug("cameraDirection => (%f,%f,%f)", this->camera.getCameraDirection().x(), this->camera.getCameraDirection().y(), this->camera.getCameraDirection().z());
         //qDebug("cameraPosition => (%f,%f,%f)", this->camera.getCameraPosition().x(), this->camera.getCameraPosition().y(), this->camera.getCameraPosition().z());
-    } else if(camera.getCameraMode() == camera.CAMERA_MODE_STATIONARY){
+    } else if(player.getCamera()->getCameraMode() == player.getCamera()->CAMERA_MODE_STATIONARY){
         this->updateCameraVelNorm();
-        QVector3D cameraVelocity = (cameraCurrentVelocityNorm * this->CAMERA_MOVEMENT_SPEED);
-        QVector3D newCameraPosition = this->camera.getCameraPosition() + cameraVelocity;
+        QVector3D playerVelocity = (playerCurrentVelocityNorm * this->CAMERA_MOVEMENT_SPEED);\
         //qDebug("newCameraPosition => (%f,%f,%f)",newCameraPosition.x(),newCameraPosition.y(),newCameraPosition.z());
         //qDebug("newCameraRotation => (%f,%f,%f)",this->camera.getCameraRotation().x(),this->camera.getCameraRotation().y(),this->camera.getCameraRotation().z());
 
-        this->camera.setCameraPosition(newCameraPosition);
-        this->camera.setCameraRotation(this->camera.getCameraRotation() + cameraCurrentRotationNorm);
+        player.getRigidbody()->addForce(playerVelocity);
+        player.getCamera()->setCameraRotation(player.getCamera()->getCameraRotation() + cameraCurrentRotationNorm);
     }
 
     //Rotation souris
@@ -215,6 +214,7 @@ void MainWidget::initializeGL()
     initShaders();
     initTextures();
 
+
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
 
@@ -230,6 +230,8 @@ void MainWidget::initializeGL()
     //Init Model
     geometries = new GeometryEngine;
     this->sceneRoot = new GameObject();
+
+    player.transform->setParent(this->sceneRoot->transform);
 
     WorldGrid worldGrid = WorldGrid(1,QVector3D(16,256,16));
 
@@ -319,12 +321,12 @@ void MainWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //Update Lights
-    lightning->updateLightning(&mainProgram, camera.getCameraPosition());
+    lightning->updateLightning(&mainProgram, player.getCamera()->getCameraPosition());
 
-    skybox->Draw(&skyboxProgram, geometries, projection, this->camera);
+    skybox->Draw(&skyboxProgram, geometries, projection, player.getCamera());
 
     sceneRoot->Update();
-    sceneRoot->Draw(&mainProgram,geometries, projection,this->camera);
+    sceneRoot->Draw(&mainProgram,geometries, projection, player.getCamera());
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *ev)
@@ -345,10 +347,10 @@ void MainWidget::keyPressEvent(QKeyEvent *ev)
         isPressed.find(ev->text()).value() = true;
     else if(ev->text() == "c" && !isPressed.value(ev->text())){
         //qDebug("Changement de Caméra");
-        if(this->camera.getCameraMode() == this->camera.CAMERA_MODE_ORBITAL)
-            this->camera.setCameraToStationaryMode();
-        else if(this->camera.getCameraMode() == this->camera.CAMERA_MODE_STATIONARY)
-            this->camera.setCameraToOrbitalMode();
+        if(player.getCamera()->getCameraMode() == player.getCamera()->CAMERA_MODE_ORBITAL)
+            player.getCamera()->setCameraToStationaryMode();
+        else if(player.getCamera()->getCameraMode() == player.getCamera()->CAMERA_MODE_STATIONARY)
+            player.getCamera()->setCameraToOrbitalMode();
         isPressed.find(ev->text()).value() = true;
     }
     else if(ev->text() == " " && !isPressed.value(ev->text()))
@@ -388,19 +390,19 @@ void MainWidget::updateCameraVelNorm(){
     QVector3D newRotNorm = QVector3D(0,0,0);
 
     if(this->isPressed.value("z"))
-        newVelNorm += this->camera.getCameraDirection()*20;
+        newVelNorm += this->player.getCamera()->getCameraDirection();
     if(this->isPressed.value("s"))
-        newVelNorm -= this->camera.getCameraDirection()*20;
+        newVelNorm -= this->player.getCamera()->getCameraDirection();
     if(this->isPressed.value("d"))
-        newVelNorm += this->camera.getCameraRight()*20;
+        newVelNorm += player.getCamera()->getCameraRight();
     if(this->isPressed.value("q"))
-        newVelNorm -= this->camera.getCameraRight()*20;
+        newVelNorm -= player.getCamera()->getCameraRight();
 
     if(this->isPressed.value(" "))
-        newVelNorm += this->camera.getCameraUp()*15;
+        newVelNorm += player.getCamera()->getCameraUp();
     if(this->isPressed.value("ctrl"))
-        newVelNorm -= this->camera.getCameraUp()*15;
+        newVelNorm -= player.getCamera()->getCameraUp();
 
-    this->cameraCurrentVelocityNorm = newVelNorm;
+    this->playerCurrentVelocityNorm = newVelNorm;
     this->cameraCurrentRotationNorm = newRotNorm;
 }

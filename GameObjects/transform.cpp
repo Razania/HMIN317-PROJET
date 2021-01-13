@@ -37,6 +37,16 @@ void Transform::removeChild(Transform* child){
         }
 }
 
+QVector3D Transform::getWorldPosition()
+{
+    QVector3D worldPos = this->getLocalPosition();
+
+    if(this->parentNode != nullptr)
+        worldPos += this->parentNode->getWorldPosition();
+
+    return worldPos;
+}
+
 QMatrix4x4 Transform::worldMatrix(){
     QMatrix4x4 transformMatrix = QMatrix4x4();
     transformMatrix.setToIdentity();

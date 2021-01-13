@@ -16,7 +16,7 @@ class ChunkGameObject : public GameObject
 public:
     ChunkGameObject(Chunk* chunk);
     void generateSurface(Chunk* chunk);
-    void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera camera) override;
+    void Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera* camera) override;
 private:
     void addBlockFace(Chunk* chunk, QVector3D blockPos, FaceDirection face);
 
