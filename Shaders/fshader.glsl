@@ -1,4 +1,5 @@
 #version 330 core
+#extension GL_EXT_texture_array : enable
 
 uniform sampler2DArray textureList;
 
