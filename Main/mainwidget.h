@@ -100,7 +100,10 @@ protected:
     void initTextures();
     QVector<QString> chargerTexture();
     void changerTexture();
+<<<<<<< HEAD
     void changerMode();
+=======
+>>>>>>> Alex
     void updateCameraVelNorm();
 
 private:
