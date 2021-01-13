@@ -1,4 +1,7 @@
 #version 330 core
+#extension GL_NV_shadow_samplers_cube : enable
+
+out vec4 fragColor;
 
 uniform samplerCube skyboxTexture;
 
@@ -8,5 +11,5 @@ void main(void)
 {
     //gl_FragColor = vec4(0.5,0,0,1);
 
-    gl_FragColor = textureCube(skyboxTexture, texCoords);
+    fragColor = textureCube(skyboxTexture, texCoords);
 }
