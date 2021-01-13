@@ -65,6 +65,9 @@
 #include <WorldGeneration/chunk.h>
 #include <QTimer>
 
+
+
+
 std::vector<ChunkGameObject*> chunkObjects;
 
 int X = 0;
@@ -86,12 +89,14 @@ MainWidget::MainWidget(QWidget *parent) :
 
     tab = chargerTexture();
     label = new QLabel(this);
+    labelFps = new QLabel(this);
     entier = 0;
     QPixmap image = QPixmap(tab[entier]);
     QPixmap imageResize;
     imageResize = image.scaled(100,100);
-
+    m_frameCount = 0;
     label->setPixmap(imageResize);
+    labelFps->setPixmap(imageResize);
 }
 
 MainWidget::~MainWidget()
@@ -101,6 +106,18 @@ MainWidget::~MainWidget()
     makeCurrent();
     delete geometries;
     doneCurrent();
+}
+
+void MainWidget::paintEvent() {
+    if (m_frameCount == 0) {
+         m_time.start();
+    } else {
+       // printf("FPS is %f ms\n", m_time.elapsed() / (m_frameCount));
+        labelFps->setText(QString::number((int)(m_time.elapsed() / (m_frameCount))) + " FPS");
+        labelFps->move(0,80);
+    }
+    m_frameCount++;
+
 }
 
 void MainWidget::mousePressEvent(QMouseEvent *e)
@@ -341,6 +358,8 @@ void MainWidget::paintGL()
 
     sceneRoot->Update();
     sceneRoot->Draw(&mainProgram,geometries, projection, player.getCamera());
+
+    paintEvent();
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *ev)
