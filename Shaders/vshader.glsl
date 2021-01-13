@@ -12,7 +12,7 @@ in int a_texlayer;
 out vec2 texCoords;
 out vec4 v_normal;
 out vec4 FragPos;
-flat out uint v_texlayer;
+flat out int v_texlayer;
 
 //! [0]
 void main()

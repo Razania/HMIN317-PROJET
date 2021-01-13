@@ -5,7 +5,7 @@ uniform sampler2DArray textureList;
 in vec2 texCoords;
 in vec4 v_normal;
 in vec4 FragPos;
-flat in uint v_texlayer;
+flat in int v_texlayer;
 
 //Lights
 uniform vec3 viewPos;
