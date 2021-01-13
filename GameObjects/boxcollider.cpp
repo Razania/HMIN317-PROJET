@@ -1,10 +1,9 @@
 #include "boxcollider.h"
+#include "transform.h"
 
-BoxCollider::BoxCollider(Transform* t, QVector3D size)
-{
-    this->transform = t;
-    this->size = size;
-}
+BoxCollider::BoxCollider(QVector3D size) : size(size), transform(NULL) {}
+
+BoxCollider::BoxCollider(Transform* t, QVector3D size) : size(size), transform(t) {}
 
 QVector3D BoxCollider::getSize(){
     return size;

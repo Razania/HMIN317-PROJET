@@ -7,7 +7,7 @@
 class BoxCollider
 {
 public:
-    BoxCollider();
+    BoxCollider(QVector3D size);
     BoxCollider(Transform *t, QVector3D size);
 
     bool Collision(BoxCollider other, QVector3D *collisionOffSet);

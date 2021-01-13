@@ -24,5 +24,8 @@ private:
     vector<GLushort> indices;
     QOpenGLTexture *texture;
     int textureIndex;
+
+    std::vector<BoxCollider> activeBlocksColliders;
+    std::vector<BoxCollider> reserveBlocksColliders;
 };
 #endif // CHUNKGAMEOBJECT_H

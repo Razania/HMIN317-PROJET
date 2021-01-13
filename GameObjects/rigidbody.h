@@ -36,6 +36,9 @@ public:
     float getDampeningRation() const;
     void setDampeningRation(float value);
 
+    float getMinimalElapsedTime() const;
+    void setMinimalElapsedTime(float value);
+
 private:
     QVector3D velocity;
     QVector3D force;
@@ -44,6 +47,8 @@ private:
     float dampeningRation;
 
     float maxSpeed;
+
+    float minimalElapsedTime;
 
     QElapsedTimer timer;
 

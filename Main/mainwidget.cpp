@@ -188,7 +188,7 @@ void MainWidget::timerEvent(QTimerEvent *)
         //qDebug("newCameraPosition => (%f,%f,%f)",newCameraPosition.x(),newCameraPosition.y(),newCameraPosition.z());
         //qDebug("newCameraRotation => (%f,%f,%f)",this->camera.getCameraRotation().x(),this->camera.getCameraRotation().y(),this->camera.getCameraRotation().z());
 
-        player.getRigidbody()->addForce(playerVelocity);
+        player.getRigidbody()->addForce(QVector3D(playerVelocity.x(), playerVelocity.y(), playerVelocity.z()));
         player.getCamera()->setCameraRotation(player.getCamera()->getCameraRotation() + cameraCurrentRotationNorm);
     }
 

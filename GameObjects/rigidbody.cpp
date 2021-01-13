@@ -10,40 +10,45 @@ RigidBody::RigidBody(Transform* body) : body(body)
     this->setVelocity(QVector3D(0,0,0));
 
     this->setGravity(9.71);
-    this->setMass(30);
+    this->setMass(10);
     this->setMaxSpeed(5);
     this->setDampeningRation(0.25f);
+    this->setMinimalElapsedTime(0.05f);
 }
 
 void RigidBody::updateBody()
 {
     float elapsedTime = ((float) timer.elapsed()) / 1000.0f; //Get Elapsed Time
 
-    qDebug("force(%f, %f, %f) to apply in %f seconds", this->getForce().x(), this->getForce().y(), this->getForce().z(), elapsedTime);
+    //qDebug("force(%f, %f, %f) to apply in %f seconds", this->getForce().x(), this->getForce().y(), this->getForce().z(), elapsedTime);
 
     //MAJ vélocité
-    QVector3D scaledForces = (this->getForce() / this->getMass()) * elapsedTime;
-    this->setVelocity(this->getVelocity() / (1 + (log10(1 + this->getDampeningRation())))); //Dampening
-    this->addVelocity(scaledForces);
+    QVector3D scaledForces = (this->getForce() / this->getMass() * elapsedTime);
+        //Dampening
+    QVector3D dampenedVelocity = this->getVelocity() / (1 + (log10(1 + this->getDampeningRation())));
+    this->setVelocity(QVector3D(dampenedVelocity.x(), this->getVelocity().y(), dampenedVelocity.z()));
 
+    this->addVelocity(scaledForces);
     this->setForce(QVector3D(0,0,0));
 
     //MAJ position body
     QVector3D bodyMovement = this->getVelocity();
 
-    qDebug("velocity(%f, %f, %f)", bodyMovement.x(), bodyMovement.y(), bodyMovement.z());
+    //qDebug("velocity(%f, %f, %f)", bodyMovement.x(), bodyMovement.y(), bodyMovement.z());
 
         //Check Speed
-    if(bodyMovement.length() > this->getMaxSpeed())
-        bodyMovement *= (this->getMaxSpeed() / bodyMovement.length());
+    QVector3D bodyMovementXZ = QVector3D(this->getVelocity().x(), 0, this->getVelocity().z());
+    if(bodyMovementXZ.length() > this->getMaxSpeed())
+        bodyMovementXZ *= (this->getMaxSpeed() / bodyMovement.length());
+
+    bodyMovement = QVector3D(bodyMovementXZ.x(), bodyMovement.y(), bodyMovementXZ.z());
 
         //TimeScale Movement
     bodyMovement *= elapsedTime;
         //Apply Movement
-    qDebug("oldPosition(%f, %f, %f)", body->getLocalPosition().x(), body->getLocalPosition().y(), body->getLocalPosition().z());
+    //qDebug("oldPosition(%f, %f, %f)", body->getLocalPosition().x(), body->getLocalPosition().y(), body->getLocalPosition().z());
     body->setLocalPosition(body->getLocalPosition() + bodyMovement);
-    qDebug("newPosition(%f, %f, %f)\n", body->getLocalPosition().x(), body->getLocalPosition().y(), body->getLocalPosition().z());
-
+    //qDebug("newPosition(%f, %f, %f)\n", body->getLocalPosition().x(), body->getLocalPosition().y(), body->getLocalPosition().z());
 
     timer.start(); //Restart Timer
 }
@@ -128,4 +133,14 @@ float RigidBody::getDampeningRation() const
 void RigidBody::setDampeningRation(float value)
 {
     dampeningRation = value;
+}
+
+float RigidBody::getMinimalElapsedTime() const
+{
+    return minimalElapsedTime;
+}
+
+void RigidBody::setMinimalElapsedTime(float value)
+{
+    minimalElapsedTime = value;
 }
