@@ -49,15 +49,15 @@ struct SpotLight{
     vec3 specular;
 };
 
-const int MAX_DIRECTIONAL_LIGHTS = 10;
+const int MAX_DIRECTIONAL_LIGHTS = 2;
 uniform int nbOfDirectionalLights;
 uniform DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
 
-const int MAX_POINT_LIGHTS = 100;
+const int MAX_POINT_LIGHTS = 20;
 uniform int nbOfPointLights;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
-const int MAX_SPOT_LIGHTS = 100;
+const int MAX_SPOT_LIGHTS = 20;
 uniform int nbOfSpotLights;
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 

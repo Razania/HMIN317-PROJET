@@ -13,7 +13,7 @@ void LightningEngine::updateLightning(QOpenGLShaderProgram *program, QVector3D v
 
     program->setUniformValue("viewPos", viewPosition);
 
-    int maxLights = 100;
+    int maxLights = 2;
 
     int index = 0;
     for(DirectionalLightObject light : directionalLights.values()){
@@ -22,7 +22,7 @@ void LightningEngine::updateLightning(QOpenGLShaderProgram *program, QVector3D v
     }
     program->setUniformValue("nbOfDirectionalLights", index);
 
-    maxLights = 100;
+    maxLights = 20;
 
     index = 0;
     for(PointLightObject light : pointLights.values()){
@@ -31,7 +31,7 @@ void LightningEngine::updateLightning(QOpenGLShaderProgram *program, QVector3D v
     }
     program->setUniformValue("nbOfPointLights", index);
 
-    maxLights = 100;
+    maxLights = 20;
 
     index = 0;
     for(SpotLightObject light : spotLights.values()){
