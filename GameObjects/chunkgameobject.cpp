@@ -14,10 +14,15 @@ void ChunkGameObject::generateSurface(Chunk* chunk)
 
     //qDebug("Generate Surface of Chunk (%d, %d)\n",chunk->getPosition().first, chunk->getPosition().second);
 
+    //Reset BoxColliders
+    //this->stashCurrentActiveBlocksColliders();
+
     for(int i = 0; i<chunk->getChunkDimensions().x(); i++) //x
         for(int j = 0; j<chunk->getChunkDimensions().y(); j++) //y
             for(int k = 0; k<chunk->getChunkDimensions().z(); k++){ //z
                 Block* currentBlock = chunk->getBlockAt(QVector3D(i,j,k));
+
+                bool isDrawn = false;
 
                 if(currentBlock->getType()._value == BlockType::Air) //If current block is air no need to draw it
                     continue;
@@ -26,10 +31,12 @@ void ChunkGameObject::generateSurface(Chunk* chunk)
                 if(j == 0){//Bottom of Chunk => Always draw
                     //Draw Bottom Face
                     this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Bottom);
+                    isDrawn = true;
                 } else {
                     if(currentBlock->canDrawFaceTowardBlock(chunk->getBlockAt(QVector3D(i,j-1,k)))){
                         //Draw Bottom Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Bottom);
+                        isDrawn = true;
                     }
                 }
 
@@ -37,10 +44,12 @@ void ChunkGameObject::generateSurface(Chunk* chunk)
                 if(j == chunk->getChunkDimensions().y() - 1){//Top of Chunk => Always draw
                     //Draw Top Face
                     this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Top);
+                    isDrawn = true;
                 } else {
                     if(currentBlock->canDrawFaceTowardBlock(chunk->getBlockAt(QVector3D(i,j+1,k)))){
                         //Draw Top Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Top);
+                        isDrawn = true;
                     }
                 }
 
@@ -51,11 +60,13 @@ void ChunkGameObject::generateSurface(Chunk* chunk)
                     if(neighbour == nullptr || (neighbour != nullptr && currentBlock->canDrawFaceTowardBlock(neighbour->getBlockAt(QVector3D(chunk->getChunkDimensions().x() - 1,j,k))))){
                         //Draw Left Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Left);
+                        isDrawn = true;
                     }
                 } else {
                     if(currentBlock->canDrawFaceTowardBlock(chunk->getBlockAt(QVector3D(i-1,j,k)))){
                         //Draw Left Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Left);
+                        isDrawn = true;
                     }
                 }
 
@@ -66,11 +77,13 @@ void ChunkGameObject::generateSurface(Chunk* chunk)
                     if(neighbour == nullptr || (neighbour != nullptr && currentBlock->canDrawFaceTowardBlock(neighbour->getBlockAt(QVector3D(0,j,k))))){
                         //Draw Right Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Right);
+                        isDrawn = true;
                     }
                 } else {
                     if(currentBlock->canDrawFaceTowardBlock(chunk->getBlockAt(QVector3D(i+1,j,k)))){
                         //Draw Right Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Right);
+                        isDrawn = true;
                     }
                 }
 
@@ -81,11 +94,13 @@ void ChunkGameObject::generateSurface(Chunk* chunk)
                     if(neighbour == nullptr || (neighbour != nullptr && currentBlock->canDrawFaceTowardBlock(neighbour->getBlockAt(QVector3D(i,j,chunk->getChunkDimensions().z() -1))))){
                         //Draw Back Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Back);
+                        isDrawn = true;
                     }
                 } else {
                     if(currentBlock->canDrawFaceTowardBlock(chunk->getBlockAt(QVector3D(i,j,k-1)))){
                         //Draw Back Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Back);
+                        isDrawn = true;
                     }
                 }
 
@@ -96,16 +111,25 @@ void ChunkGameObject::generateSurface(Chunk* chunk)
                     if(neighbour == nullptr || (neighbour != nullptr && currentBlock->canDrawFaceTowardBlock(neighbour->getBlockAt(QVector3D(i,j,0))))){
                         //Draw Front Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Front);
+                        isDrawn = true;
                     }
                 } else {
                     if(currentBlock->canDrawFaceTowardBlock(chunk->getBlockAt(QVector3D(i,j,k+1)))){
                         //Draw Front Face
                         this->addBlockFace(chunk, QVector3D(i,j,k), FaceDirection::Front);
+                        isDrawn = true;
                     }
                 }
+
+                if(false && isDrawn){
+                    //Ajouter BoxCollider pour ce cube
+                    BoxCollider * collider = this->fetchNewActiveBlockCollider();
+                    collider->getTransform()->setParent(this->transform);
+
+                    collider->getTransform()->setLocalPosition(QVector3D(i,j,k));
+                    qDebug("%f %f %f", collider->getTransform()->getWorldPosition().x(), collider->getTransform()->getWorldPosition().y(), collider->getTransform()->getWorldPosition().z());
+                }
             }
-
-
 }
 
 void ChunkGameObject::addBlockFace(Chunk* chunk, QVector3D blockPos, FaceDirection face)
@@ -341,6 +365,44 @@ void ChunkGameObject::addBlockFace(Chunk* chunk, QVector3D blockPos, FaceDirecti
     this->indices.push_back(firstFaceVertexIndex);
 }
 
+BoxCollider *ChunkGameObject::fetchNewActiveBlockCollider()
+{
+    BoxCollider * blockCollider;
+    if(reserveBlocksColliders.size() != 0){
+        blockCollider = reserveBlocksColliders.at(reserveBlocksColliders.size() - 1);
+        reserveBlocksColliders.pop_back();
+    }
+    else
+        blockCollider = new BoxCollider(QVector3D(0,0,0), QVector3D(0,0,0));
+
+    blockCollider->setSize(QVector3D(1,1,1));
+    blockCollider->setAnchorPos(QVector3D(0.5,0.5,0.5));
+
+    activeBlocksColliders.push_back(blockCollider);
+
+    return blockCollider;
+}
+
+void ChunkGameObject::stashCurrentActiveBlocksColliders()
+{
+    if(activeBlocksColliders.size() == 0)
+        return;
+
+    std::vector<BoxCollider*> buffer;
+    buffer.reserve(activeBlocksColliders.size() + reserveBlocksColliders.size());
+
+    buffer.insert(buffer.end(), reserveBlocksColliders.begin(), reserveBlocksColliders.end());
+    buffer.insert(buffer.end(), activeBlocksColliders.begin(), activeBlocksColliders.end());
+
+    reserveBlocksColliders.clear();
+    reserveBlocksColliders = buffer;
+}
+
+std::vector<BoxCollider*> ChunkGameObject::getActiveBlocksColliders() const
+{
+    return activeBlocksColliders;
+}
+
 void ChunkGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geometries, QMatrix4x4 projection, Camera* camera) {
     program->bind();
 
@@ -355,8 +417,9 @@ void ChunkGameObject::Draw(QOpenGLShaderProgram *program, GeometryEngine *geomet
     geometries->drawMeshObjGeometry_BasicVertexData(program, &vertices, &indices);
 
     program->release();
-
-    GameObject::Draw(program, geometries, projection, camera);
 }
+
+void ChunkGameObject::Start() {}
+void ChunkGameObject::Update() {}
 
 
