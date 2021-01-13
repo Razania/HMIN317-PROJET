@@ -21,14 +21,11 @@ QVector3D Camera::getCameraDirection(){
     if(this->getCameraMode() == this->CAMERA_MODE_ORBITAL)
         return (this->getCameraTarget() - this->getCameraPosition()).normalized();
 
-    QQuaternion rot = QQuaternion::fromAxisAndAngle(0,1,0,this->getCameraRotation().y());
-    return rot.rotatedVector(this->getCameraFront());
+    return this->getCameraFront();
 }
 QVector3D Camera::getCameraRight(){
-    if(this->getCameraDirection().z() < 0)
-        return -(QVector3D::crossProduct(this->getCameraUp(), this->getCameraDirection())).normalized();
-    QQuaternion rot = QQuaternion::fromAxisAndAngle(0,1,0,this->getCameraRotation().y());
-    return rot.rotatedVector((QVector3D::crossProduct(this->getCameraUp(), this->getCameraDirection())).normalized());
+    QQuaternion rot = QQuaternion::fromEulerAngles(this->getCameraRotation());
+    return rot.rotatedVector((QVector3D::crossProduct(cameraUp, cameraFront)).normalized());
 }
 
 QMatrix4x4 Camera::getViewMatrix(){
@@ -86,8 +83,6 @@ void Camera::setCameraTarget(const QVector3D &value)
 
 QVector3D Camera::getCameraUp() const
 {
-
-
     return cameraUp;
 }
 
@@ -98,7 +93,7 @@ void Camera::setCameraUp(const QVector3D &value)
 
 QVector3D Camera::getCameraFront() const
 {
-    QQuaternion rot = QQuaternion::fromAxisAndAngle(1,0,0,this->getCameraRotation().x());
+    QQuaternion rot = QQuaternion::fromEulerAngles(this->getCameraRotation());
     return rot.rotatedVector(cameraFront);
 }
 

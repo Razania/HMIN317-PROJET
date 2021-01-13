@@ -17,8 +17,9 @@ void LightningEngine::updateLightning(QOpenGLShaderProgram *program, QVector3D v
 
     int index = 0;
     for(DirectionalLightObject light : directionalLights.values()){
-        if(index != maxLights)
-            loadDirectionalLightToShader(program, index++, light.getLight());
+        if(index == maxLights)
+            break;
+        loadDirectionalLightToShader(program, index++, light.getLight());
     }
     program->setUniformValue("nbOfDirectionalLights", index);
 
@@ -26,8 +27,9 @@ void LightningEngine::updateLightning(QOpenGLShaderProgram *program, QVector3D v
 
     index = 0;
     for(PointLightObject light : pointLights.values()){
-        if(index != maxLights)
-            loadPointLightToShader(program, index++, light.getLight());
+        if(index == maxLights)
+            break;
+        loadPointLightToShader(program, index++, light.getLight());
     }
     program->setUniformValue("nbOfPointLights", index);
 
@@ -35,8 +37,9 @@ void LightningEngine::updateLightning(QOpenGLShaderProgram *program, QVector3D v
 
     index = 0;
     for(SpotLightObject light : spotLights.values()){
-        if(index != maxLights)
-            loadSpotLightToShader(program, index++, light.getLight());
+        if(index == maxLights)
+            break;
+        loadSpotLightToShader(program, index++, light.getLight());
     }
     program->setUniformValue("nbOfSpotLights", index);
 

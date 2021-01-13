@@ -128,8 +128,8 @@ void MainWidget::mouseMoveEvent(QMouseEvent *e)
             newRotNorm += QVector3D(1,0,0);
             Y = e->localPos().y();
         }
-        QVector3D vec = QVector3D(-e->localPos().y()+540, -e->localPos().x(), 0);
-
+        QVector3D vec = QVector3D(-e->localPos().y()+(this->height()/2), -e->localPos().x()-(this->width()/2), 0);
+        qDebug("%f %f %f", vec.x(), vec.y(), vec.z());
         player.getCamera()->setCameraRotation(vec);
     }
 }
@@ -390,9 +390,9 @@ void MainWidget::updateCameraVelNorm(){
     QVector3D newRotNorm = QVector3D(0,0,0);
 
     if(this->isPressed.value("z"))
-        newVelNorm += this->player.getCamera()->getCameraDirection();
+        newVelNorm += this->player.getCamera()->getCameraFront();
     if(this->isPressed.value("s"))
-        newVelNorm -= this->player.getCamera()->getCameraDirection();
+        newVelNorm -= this->player.getCamera()->getCameraFront();
     if(this->isPressed.value("d"))
         newVelNorm += player.getCamera()->getCameraRight();
     if(this->isPressed.value("q"))
