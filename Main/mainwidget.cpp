@@ -65,6 +65,7 @@
 
 int X = 0;
 int Y = 0;
+int mode = 0;
 
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
@@ -154,7 +155,7 @@ QVector<QString> MainWidget::chargerTexture(){
     tab.push_back(":/grassBottom.png");
     tab.push_back(":/grassSide.png");
     tab.push_back(":/grassTop.png");
-    tab.push_back(":/stoneBottom.png");
+    tab.push_back(":/stone.png");
     return tab;
 }
 
@@ -170,6 +171,13 @@ void MainWidget::changerTexture(){
     imageResize = image.scaled(100,100);
 
     label->setPixmap(imageResize);
+}
+
+void MainWidget::changerMode(){
+    if(mode == 0)
+        mode = 1;
+    else
+        mode = 0;
 }
 
 void MainWidget::timerEvent(QTimerEvent *)
@@ -198,6 +206,12 @@ void MainWidget::timerEvent(QTimerEvent *)
     else // Update rotation
         rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
 
+    if(mode == 0){
+        player.getRigidbody()->setGravity(0.0f);
+    }
+    else{
+        player.getRigidbody()->setGravity(9.71f);
+    }
     update();
 }
 
@@ -389,6 +403,9 @@ void MainWidget::keyReleaseEvent(QKeyEvent *ev)
     if(ev->key() == Qt::Key_T){
         changerTexture();
     }
+    if(ev->key() == Qt::Key_M){
+        changerMode();
+    }
 }
 
 void MainWidget::updateCameraVelNorm(){
@@ -404,10 +421,16 @@ void MainWidget::updateCameraVelNorm(){
     if(this->isPressed.value("q"))
         newVelNorm -= player.getCamera()->getCameraRight();
 
-    if(this->isPressed.value(" "))
-        newVelNorm += player.getCamera()->getCameraUp();
-    if(this->isPressed.value("ctrl"))
-        newVelNorm -= player.getCamera()->getCameraUp();
+    if(this->isPressed.value(" ") and mode == 0)
+        newVelNorm += player.getCamera()->getCameraUp()/5;
+
+    else if(this->isPressed.value(" ") and mode == 1){
+        player.getRigidbody()->addForce(QVector3D(0,30 * player.getRigidbody()->getMass(),0));
+    }
+
+
+    if(this->isPressed.value("ctrl") and mode == 0)
+        newVelNorm -= player.getCamera()->getCameraUp()/5;
 
     this->playerCurrentVelocityNorm = newVelNorm;
     this->cameraCurrentRotationNorm = newRotNorm;
