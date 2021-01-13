@@ -11,8 +11,8 @@ RigidBody::RigidBody(Transform* body) : body(body)
 
     this->setGravity(9.71);
     this->setMass(10);
-    this->setMaxSpeed(5);
-    this->setDampeningRation(0.25f);
+    this->setMaxSpeed(20);
+    this->setDampeningRation(0.05f);
     this->setMinimalElapsedTime(0.05f);
 }
 
@@ -20,16 +20,13 @@ void RigidBody::updateBody()
 {
     float elapsedTime = ((float) timer.elapsed()) / 1000.0f; //Get Elapsed Time
 
-    if(elapsedTime < 0.03f)
-        return;
-
     //qDebug("velocity(%f, %f, %f)", this->getVelocity().x(), this->getVelocity().y(), this->getVelocity().z());
     //qDebug("force(%f, %f, %f) to apply in %f seconds", this->getForce().x(), this->getForce().y(), this->getForce().z(), elapsedTime);
 
     //MAJ vélocité
     QVector3D scaledForces = (this->getForce() / this->getMass()) * elapsedTime;
         //Dampening
-    QVector3D dampenedVelocity = this->getVelocity() / ((1 + (log10(1 + this->getDampeningRation()))) * elapsedTime);
+    QVector3D dampenedVelocity = this->getVelocity() / ((1 + (log10(1 + this->getDampeningRation()))));
     this->setVelocity(dampenedVelocity);
     //qDebug("velocity(%f, %f, %f)", this->getVelocity().x(), this->getVelocity().y(), this->getVelocity().z());
 
@@ -44,11 +41,8 @@ void RigidBody::updateBody()
     //qDebug("velocity(%f, %f, %f)", bodyMovement.x(), bodyMovement.y(), bodyMovement.z());
 
         //Check Speed
-    QVector3D bodyMovementXZ = QVector3D(this->getVelocity().x(), 0, this->getVelocity().z());
-    if(bodyMovementXZ.length() > this->getMaxSpeed())
-        bodyMovementXZ *= (this->getMaxSpeed() / bodyMovement.length());
-
-    bodyMovement = QVector3D(bodyMovementXZ.x(), bodyMovement.y(), bodyMovementXZ.z());
+    if(bodyMovement.length() > this->getMaxSpeed())
+        bodyMovement *= (this->getMaxSpeed() / bodyMovement.length());
 
         //TimeScale Movement
     bodyMovement *= elapsedTime;

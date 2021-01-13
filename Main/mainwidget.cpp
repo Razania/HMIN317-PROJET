@@ -88,7 +88,7 @@ MainWidget::MainWidget(QWidget *parent) :
     QPixmap imageResize;
     imageResize = image.scaled(100,100);
 
-    label->setPixmap(imageResize);
+    //label->setPixmap(imageResize);
 }
 
 MainWidget::~MainWidget()
@@ -170,7 +170,7 @@ void MainWidget::changerTexture(){
     QPixmap imageResize;
     imageResize = image.scaled(100,100);
 
-    label->setPixmap(imageResize);
+    //label->setPixmap(imageResize);
 }
 
 void MainWidget::changerMode(){
@@ -422,7 +422,7 @@ void MainWidget::updateCameraVelNorm(){
         newVelNorm -= player.getCamera()->getCameraRight();
 
     if(this->isPressed.value(" ") and mode == 0)
-        newVelNorm += player.getCamera()->getCameraUp()/5;
+        newVelNorm += player.getCamera()->getCameraUp();
 
     else if(this->isPressed.value(" ") and mode == 1){
         player.getRigidbody()->addForce(QVector3D(0,30 * player.getRigidbody()->getMass(),0));
@@ -430,7 +430,7 @@ void MainWidget::updateCameraVelNorm(){
 
 
     if(this->isPressed.value("ctrl") and mode == 0)
-        newVelNorm -= player.getCamera()->getCameraUp()/5;
+        newVelNorm -= player.getCamera()->getCameraUp();
 
     this->playerCurrentVelocityNorm = newVelNorm;
     this->cameraCurrentRotationNorm = newRotNorm;
